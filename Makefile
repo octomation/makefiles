@@ -2,4 +2,4 @@
 
 .PHONY: compile
 compile:
-	@ls | grep .mk | go run dist/compile.go
+	@ls | grep .mk | go run dist/compiler.go

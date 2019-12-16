@@ -1,0 +1,27 @@
+- Makefile: Go Binary
+  Projects:
+    - kamilsk/check
+    - kamilsk/forward
+    - kamilsk/genome
+    - kamilsk/lift
+    - kamilsk/retry.cli
+    - kamilsk/semaphore.cli
+    - kamilsk/stash
+  Dynamic:
+    - { owner: kamilsk, tags: [go, cli, tool] }
+
+- Makefile: Go Module
+  Projects: []
+  Dynamic: []
+
+- Makefile: Go Service
+  Projects: []
+  Dynamic: []
+
+- Makefile: PHP Package
+  Projects: []
+  Dynamic: []
+
+- Makefile: PHP Service
+  Projects: []
+  Dynamic: []
