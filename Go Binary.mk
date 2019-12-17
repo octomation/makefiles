@@ -7,3 +7,6 @@ include src/go/deps.mk
 include src/go/tooling.mk
 include src/go/test.unit.mk
 include src/go/build.mk
+
+.PHONY: refresh
+refresh: update deps generate format test build
