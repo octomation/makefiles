@@ -12,9 +12,9 @@ import (
 )
 
 const (
-	distribution = "dist"
-	filename     = "Makefile"
-	include      = "include "
+	distributionDir  = "dist"
+	includeDirective = "include "
+	outputFilename   = "Makefile"
 )
 
 func main() {
@@ -24,7 +24,7 @@ func main() {
 	for scanner.Scan() {
 		makefiles = append(makefiles, Makefile(scanner.Text()))
 	}
-	if err := makefiles.CompileTo(distribution); err != nil {
+	if err := makefiles.CompileTo(distributionDir); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -41,7 +41,7 @@ func (batch Errors) Error() string {
 
 func (batch Errors) Reduce() error {
 	reduced := batch[:0]
-	for _, err := range reduced {
+	for _, err := range batch {
 		if err != nil {
 			reduced = append(reduced, err)
 		}
@@ -65,15 +65,14 @@ func (makefile Makefile) AppendTo(output io.Writer) error {
 	scanner.Split(bufio.ScanLines)
 	for scanner.Scan() {
 		text := scanner.Text()
-		if !strings.HasPrefix(text, include) {
+		if !strings.HasPrefix(text, includeDirective) {
 			if _, err := fmt.Fprintln(output, text); err != nil {
 				return err
 			}
 			continue
 		}
-		name := strings.TrimSpace(strings.TrimPrefix(text, include))
-		makefile := Makefile(name)
-		if err := makefile.AppendTo(output); err != nil {
+		name := strings.TrimSpace(strings.TrimPrefix(text, includeDirective))
+		if err := Makefile(name).AppendTo(output); err != nil {
 			return err
 		}
 		if _, err := fmt.Fprintln(output); err != nil {
@@ -91,14 +90,11 @@ func (makefile Makefile) CompileTo(dir string) error {
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return err
 	}
-	output, err := os.Create(filepath.Join(dir, filename))
+	output, err := os.Create(filepath.Join(dir, outputFilename))
 	if err != nil {
 		return err
 	}
-	defer func() {
-		_ = output.Sync()
-		_ = output.Close()
-	}()
+	defer func() { _ = output.Close() }()
 	return makefile.AppendTo(output)
 }
 

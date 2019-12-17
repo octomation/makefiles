@@ -4,6 +4,7 @@ MODULE      = $(shell go list -m)
 PACKAGES    = $(shell go list ./...)
 PATHS       = $(shell go list ./... | sed -e "s|\s+$(shell go list -m)/\{0,1\}||g")
 TIMEOUT     = 1s
+VENDOR      = $(dir $(MODULE))
 
 .PHONY: go-env
 go-env:
