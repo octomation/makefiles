@@ -1,6 +1,6 @@
 .PHONY: build
 build:
-	@go build -o $(BINARY) -ldflags "-s -w -X main.commit=$(COMMIT) -X main.date=$(DATE)" .
+	@go build -o $(BINARY) $(LDFLAGS) .
 
 .PHONY: dist
 dist:

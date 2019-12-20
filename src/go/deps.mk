@@ -4,4 +4,4 @@ deps:
 
 .PHONY: update
 update:
-	@go get -tags=integration,tools -mod= -u
+	@go get $(GOTAGS) -mod= -u

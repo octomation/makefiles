@@ -2,21 +2,37 @@
 
 SHELL = /bin/bash -euo pipefail
 
-BINPATH     = $(shell dirname $(PWD))/bin
 GO111MODULE = on
 GOFLAGS     = -mod=vendor
 GOPRIVATE   =
-GOPROXY     = https://proxy.golang.org,https://gocenter.io,direct
+GOPROXY     = direct
+GOTAGS      = -tags integration,tools
+MODULE      = $(shell go list -m)
+PACKAGES    = $(shell go list $(GOTAGS) ./...)
+PATHS       = $(shell go list $(GOTAGS) ./... | sed -e "s|$(shell go list -m)/\{0,1\}||g")
+TIMEOUT     = 1s
+VENDOR      = $(dir $(MODULE))
+
+.PHONY: go-env
+go-env:
+	@echo "GO111MODULE: $(shell go env GO111MODULE)"
+	@echo "GOFLAGS:     $(strip $(shell go env GOFLAGS))"
+	@echo "GOPRIVATE:   $(strip $(shell go env GOPRIVATE))"
+	@echo "GOPROXY:     $(strip $(shell go env GOPROXY))"
+	@echo "GOTAGS:      $(GOTAGS)"
+	@echo "MODULE:      $(MODULE)"
+	@echo "PACKAGES:    $(PACKAGES)"
+	@echo "PATHS:       $(strip $(PATHS))"
+	@echo "TIMEOUT:     $(TIMEOUT)"
+	@echo "VENDOR:      $(VENDOR)"
+
+BINPATH = $(shell dirname $(PWD))/bin
 
 export PATH := $(BINPATH):$(PATH)
 
 .PHONY: tools-env
 tools-env:
 	@echo "BINPATH:     $(BINPATH)"
-	@echo "GO111MODULE: $(shell go env GO111MODULE)"
-	@echo "GOFLAGS:     $(strip $(shell go env GOFLAGS))"
-	@echo "GOPRIVATE:   $(strip $(shell go env GOPRIVATE))"
-	@echo "GOPROXY:     $(strip $(shell go env GOPROXY))"
 
 .PHONY: brew
 brew:
@@ -28,7 +44,7 @@ deps:
 
 .PHONY: update
 update:
-	@go get -tags=integration,tools -mod= -u
+	@go get $(GOTAGS) -mod= -u
 
 .PHONY: build
 build:
@@ -40,6 +56,9 @@ egg:
 	@go get -d -mod= -u github.com/kamilsk/egg
 	@go build -mod= -o $(BINPATH)/egg github.com/kamilsk/egg
 
+
+.PHONY: env
+env: go-env tools-env
 
 .PHONY: install
 install: egg build
