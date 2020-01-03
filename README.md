@@ -2,14 +2,6 @@
 >
 > Set of useful makefiles.
 
-## 💡 Idea
-
-...
-
-## 🏆 Motivation
-
-...
-
 ## 🤼‍♂️ How to
 
 1. Create your own Makefile based on pieces from the `src`.

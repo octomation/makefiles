@@ -9,7 +9,7 @@ GOPROXY     = direct
 GOTAGS      = -tags integration,tools
 MODULE      = $(shell go list -m)
 PACKAGES    = $(shell go list $(GOTAGS) ./...)
-PATHS       = $(shell go list $(GOTAGS) ./... | sed -e "s|$(shell go list -m)/\{0,1\}||g")
+PATHS       = $(shell go list $(GOTAGS) ./... | sed -e "s|$(shell go list -m)/\{0,1\}|./|g")
 TIMEOUT     = 1s
 VENDOR      = $(dir $(MODULE))
 
@@ -44,11 +44,26 @@ build-env:
 
 .PHONY: deps
 deps:
-	@go mod tidy && go mod vendor && go mod verify
+	@$(GO) mod tidy
+	@if [[ "$(shell $(GO) env GOFLAGS)" =~ -mod=vendor ]]; then $(GO) mod vendor; fi
+
+.PHONY: deps-clean
+deps-clean:
+	@$(GO) clean -modcache
 
 .PHONY: update
+update: selector = '.Require[] | select(.Indirect != true) | .Path'
 update:
-	@go get $(GOTAGS) -mod= -u
+	@if command -v egg > /dev/null; then \
+		packages="$(shell egg deps list)"; \
+		$(GO) get -mod= -u $$packages; \
+	elif command -v jq > /dev/null; then \
+		packages="$(shell $(GO) mod edit -json | jq -r $(selector))"; \
+		$(GO) get -mod= -u $$packages; \
+	else \
+		packages="$(shell cat go.mod | grep -v '// indirect' | grep '\t' | awk '{print $$1}')"; \
+		$(GO) get -mod= -u $$packages; \
+	fi
 
 .PHONY: format
 format:
@@ -61,6 +76,10 @@ generate:
 .PHONY: test
 test:
 	@go test -race -timeout $(TIMEOUT) $(PACKAGES)
+
+.PHONY: test-clean
+test-clean:
+	@$(GO) clean -testcache
 
 .PHONY: test-with-coverage
 test-with-coverage:

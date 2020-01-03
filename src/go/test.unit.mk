@@ -2,6 +2,10 @@
 test:
 	@go test -race -timeout $(TIMEOUT) $(PACKAGES)
 
+.PHONY: test-clean
+test-clean:
+	@$(GO) clean -testcache
+
 .PHONY: test-with-coverage
 test-with-coverage:
 	@go test -cover -timeout $(TIMEOUT) $(PACKAGES) | column -t | sort -r

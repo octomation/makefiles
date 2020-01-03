@@ -7,7 +7,7 @@ GOPROXY     = direct
 GOTAGS      = -tags integration,tools
 MODULE      = $(shell go list -m)
 PACKAGES    = $(shell go list $(GOTAGS) ./...)
-PATHS       = $(shell go list $(GOTAGS) ./... | sed -e "s|$(shell go list -m)/\{0,1\}||g")
+PATHS       = $(shell go list $(GOTAGS) ./... | sed -e "s|$(shell go list -m)/\{0,1\}|./|g")
 TIMEOUT     = 1s
 VENDOR      = $(dir $(MODULE))
 
