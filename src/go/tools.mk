@@ -1,3 +1,12 @@
+BINPATH = $(shell dirname $(PWD))/bin
+LOCAL   = $(shell dirname $(MODULE))
+
+export PATH := $(BINPATH):$(PATH)
+
+.PHONY: tools-env
+tools-env:
+	@echo "BINPATH:     $(BINPATH)"
+
 .PHONY: build
 build: install
 

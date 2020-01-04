@@ -1,46 +1,39 @@
+# sourced by https://github.com/octomation/makefiles
+
 .DEFAULT_GOAL = test-with-coverage
 
 SHELL = /bin/bash -euo pipefail
 
+GO          = GOPRIVATE=$(GOPRIVATE) GOFLAGS=$(GOFLAGS) go
 GO111MODULE = on
 GOFLAGS     = -mod=vendor
-GOPRIVATE   =
+GOPRIVATE   = go.octolab.net
 GOPROXY     = direct
-GOTAGS      = -tags integration,tools
-MODULE      = $(shell go list -m)
-PACKAGES    = $(shell go list $(GOTAGS) ./...)
-PATHS       = $(shell go list $(GOTAGS) ./... | sed -e "s|$(shell go list -m)/\{0,1\}|./|g")
+LOCAL       = $(MODULE)
+MODULE      = $(shell $(GO) list -m)
+PACKAGES    = $(shell $(GO) list ./... 2> /dev/null)
+PATHS       = $(shell $(GO) list ./... 2> /dev/null | sed -e "s|$(MODULE)/\{0,1\}||g")
 TIMEOUT     = 1s
-VENDOR      = $(dir $(MODULE))
+
+ifeq (, $(PACKAGES))
+	PACKAGES = $(MODULE)
+endif
+
+ifeq (, $(PATHS))
+	PATHS = .
+endif
 
 .PHONY: go-env
 go-env:
-	@echo "GO111MODULE: $(shell go env GO111MODULE)"
-	@echo "GOFLAGS:     $(strip $(shell go env GOFLAGS))"
-	@echo "GOPRIVATE:   $(strip $(shell go env GOPRIVATE))"
-	@echo "GOPROXY:     $(strip $(shell go env GOPROXY))"
-	@echo "GOTAGS:      $(GOTAGS)"
+	@echo "GO111MODULE: $(shell $(GO) env GO111MODULE)"
+	@echo "GOFLAGS:     $(strip $(shell $(GO) env GOFLAGS))"
+	@echo "GOPRIVATE:   $(strip $(shell $(GO) env GOPRIVATE))"
+	@echo "GOPROXY:     $(strip $(shell $(GO) env GOPROXY))"
+	@echo "LOCAL:       $(LOCAL)"
 	@echo "MODULE:      $(MODULE)"
 	@echo "PACKAGES:    $(PACKAGES)"
 	@echo "PATHS:       $(strip $(PATHS))"
 	@echo "TIMEOUT:     $(TIMEOUT)"
-	@echo "VENDOR:      $(VENDOR)"
-
-BINPATH = $(PWD)/bin
-BINARY  = $(BINPATH)/$(shell basename $(shell go list -m))
-COMMIT  = $(shell git rev-parse --verify HEAD)
-DATE    = $(shell date +%Y-%m-%dT%T%Z)
-LDFLAGS = -ldflags "-s -w -X main.commit=$(COMMIT) -X main.date=$(DATE)"
-
-export PATH := $(BINPATH):$(PATH)
-
-.PHONY: build-env
-build-env:
-	@echo "BINARY:      $(BINARY)"
-	@echo "BINPATH:     $(BINPATH)"
-	@echo "COMMIT:      $(COMMIT)"
-	@echo "DATE:        $(DATE)"
-	@echo "LDFLAGS:     $(LDFLAGS)"
 
 .PHONY: deps
 deps:
@@ -65,17 +58,41 @@ update:
 		$(GO) get -mod= -u $$packages; \
 	fi
 
-.PHONY: format
-format:
-	@goimports -local $(VENDOR) -ungroup -w $(PATHS)
+BINARY  = $(BINPATH)/$(shell basename $(MODULE))
+BINPATH = $(PWD)/bin
+COMMIT  = $(shell git rev-parse --verify HEAD)
+DATE    = $(shell date +%Y-%m-%dT%T%Z)
+LDFLAGS = -ldflags "-s -w -X main.commit=$(COMMIT) -X main.date=$(DATE)"
 
-.PHONY: generate
-generate:
-	@go generate $(PACKAGES)
+export PATH := $(BINPATH):$(PATH)
+
+.PHONY: build-env
+build-env:
+	@echo "BINARY:      $(BINARY)"
+	@echo "BINPATH:     $(BINPATH)"
+	@echo "COMMIT:      $(COMMIT)"
+	@echo "DATE:        $(DATE)"
+	@echo "LDFLAGS:     $(LDFLAGS)"
+
+.PHONY: build
+build: MAIN = .
+build:
+	@$(GO) build -o $(BINARY) $(LDFLAGS) $(MAIN)
+
+.PHONY: build-clean
+build-clean:
+	@$(GO) clean -cache
+
+.PHONY: install
+install: build
+
+.PHONY: install-clean
+install-clean:
+	@rm -f $(BINARY)
 
 .PHONY: test
 test:
-	@go test -race -timeout $(TIMEOUT) $(PACKAGES)
+	@$(GO) test -race -timeout $(TIMEOUT) $(PACKAGES)
 
 .PHONY: test-clean
 test-clean:
@@ -83,20 +100,27 @@ test-clean:
 
 .PHONY: test-with-coverage
 test-with-coverage:
-	@go test -cover -timeout $(TIMEOUT) $(PACKAGES) | column -t | sort -r
+	@$(GO) test -cover -timeout $(TIMEOUT) $(PACKAGES) | column -t | sort -r
 
 .PHONY: test-with-coverage-profile
 test-with-coverage-profile:
-	@go test -cover -covermode count -coverprofile c.out -timeout $(TIMEOUT) $(PACKAGES)
-
-.PHONY: build
-build:
-	@go build -o $(BINARY) $(LDFLAGS) .
+	@$(GO) test -cover -covermode count -coverprofile c.out -timeout $(TIMEOUT) $(PACKAGES)
 
 .PHONY: dist
 dist:
 	@godownloader .goreleaser.yml > .github/install.sh
 
+.PHONY: format
+format:
+	@goimports -local $(LOCAL) -ungroup -w $(PATHS)
+
+.PHONY: generate
+generate:
+	@$(GO) generate $(PACKAGES)
+
+
+.PHONY: clean
+clean: build-clean deps-clean install-clean test-clean
 
 .PHONY: env
 env: go-env build-env

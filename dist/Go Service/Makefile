@@ -1,27 +1,34 @@
 SHELL = /bin/bash -euo pipefail
 
+GO          = GOPRIVATE=$(GOPRIVATE) GOFLAGS=$(GOFLAGS) go
 GO111MODULE = on
 GOFLAGS     = -mod=vendor
-GOPRIVATE   =
+GOPRIVATE   = go.octolab.net
 GOPROXY     = direct
-GOTAGS      = -tags integration,tools
-MODULE      = $(shell go list -m)
-PACKAGES    = $(shell go list $(GOTAGS) ./...)
-PATHS       = $(shell go list $(GOTAGS) ./... | sed -e "s|$(shell go list -m)/\{0,1\}|./|g")
+LOCAL       = $(MODULE)
+MODULE      = $(shell $(GO) list -m)
+PACKAGES    = $(shell $(GO) list ./... 2> /dev/null)
+PATHS       = $(shell $(GO) list ./... 2> /dev/null | sed -e "s|$(MODULE)/\{0,1\}||g")
 TIMEOUT     = 1s
-VENDOR      = $(dir $(MODULE))
+
+ifeq (, $(PACKAGES))
+	PACKAGES = $(MODULE)
+endif
+
+ifeq (, $(PATHS))
+	PATHS = .
+endif
 
 .PHONY: go-env
 go-env:
-	@echo "GO111MODULE: $(shell go env GO111MODULE)"
-	@echo "GOFLAGS:     $(strip $(shell go env GOFLAGS))"
-	@echo "GOPRIVATE:   $(strip $(shell go env GOPRIVATE))"
-	@echo "GOPROXY:     $(strip $(shell go env GOPROXY))"
-	@echo "GOTAGS:      $(GOTAGS)"
+	@echo "GO111MODULE: $(shell $(GO) env GO111MODULE)"
+	@echo "GOFLAGS:     $(strip $(shell $(GO) env GOFLAGS))"
+	@echo "GOPRIVATE:   $(strip $(shell $(GO) env GOPRIVATE))"
+	@echo "GOPROXY:     $(strip $(shell $(GO) env GOPROXY))"
+	@echo "LOCAL:       $(LOCAL)"
 	@echo "MODULE:      $(MODULE)"
 	@echo "PACKAGES:    $(PACKAGES)"
 	@echo "PATHS:       $(strip $(PATHS))"
 	@echo "TIMEOUT:     $(TIMEOUT)"
-	@echo "VENDOR:      $(VENDOR)"
 
 
