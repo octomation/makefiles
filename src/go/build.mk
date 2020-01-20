@@ -1,8 +1,10 @@
-BINARY  = $(BINPATH)/$(shell basename $(MODULE))
+BINARY  = $(GOBIN)/$(shell basename $(MAIN))
 BINPATH = $(PWD)/bin
 COMMIT  = $(shell git rev-parse --verify HEAD)
 DATE    = $(shell date +%Y-%m-%dT%T%Z)
+GOBIN   = $(BINPATH)
 LDFLAGS = -ldflags "-s -w -X main.commit=$(COMMIT) -X main.date=$(DATE)"
+MAIN    = $(MODULE)
 
 export PATH := $(BINPATH):$(PATH)
 
@@ -15,7 +17,6 @@ build-env:
 	@echo "LDFLAGS:     $(LDFLAGS)"
 
 .PHONY: build
-build: MAIN = .
 build:
 	@$(GO) build -o $(BINARY) $(LDFLAGS) $(MAIN)
 
