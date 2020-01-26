@@ -8,24 +8,29 @@
 
 - Makefile: Go Tool
   Projects:
+    - kamilsk/.github
     - kamilsk/check
+    - kamilsk/egg
     - kamilsk/forward
     - kamilsk/genome
     - kamilsk/lift
-    - kamilsk/retry.cli
-    - kamilsk/semaphore.cli
+    - kamilsk/try
+    - kamilsk/parallel
     - kamilsk/stash
   Dynamic:
     - { owner: kamilsk, tags: [go, cli, tool] }
 
 - Makefile: Go Tools
   Projects:
+    - kamilsk/.dotfiles
+    - kamilsk/.github
     - kamilsk/check
+    - kamilsk/egg
     - kamilsk/forward
     - kamilsk/genome
     - kamilsk/lift
-    - kamilsk/retry.cli
-    - kamilsk/semaphore.cli
+    - kamilsk/try
+    - kamilsk/parallel
     - kamilsk/stash
   Dynamic:
     - { owner: kamilsk, tags: [go, cli, tool] }

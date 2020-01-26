@@ -8,4 +8,4 @@ format:
 
 .PHONY: generate
 generate:
-	@$(GO) generate $(PACKAGES)
+	@go generate $(PACKAGES)
