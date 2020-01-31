@@ -25,11 +25,12 @@ build:
 
 .PHONY: build-clean
 build-clean:
-	@go clean -cache
+	@rm -f $(BINARY)
 
 .PHONY: install
-install: build
+install:
+	@go install $(LDFLAGS) $(MAIN)
 
 .PHONY: install-clean
 install-clean:
-	@rm -f $(BINARY)
+	@go clean -cache
