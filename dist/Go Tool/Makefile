@@ -57,6 +57,10 @@ update:
 		packages="`go list -f $(selector) -m all`"; \
 	fi; go get -mod= -u $$packages
 
+.PHONY: update-all
+update-all:
+	@go get -mod= -u ./...
+
 BINARY  = $(BINPATH)/$(shell basename $(MAIN))
 BINPATH = $(PWD)/bin
 COMMIT  = $(shell git rev-parse --verify HEAD)

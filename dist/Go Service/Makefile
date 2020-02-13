@@ -57,6 +57,10 @@ update:
 		packages="`go list -f $(selector) -m all`"; \
 	fi; go get -mod= -u $$packages
 
+.PHONY: update-all
+update-all:
+	@go get -mod= -u ./...
+
 .PHONY: test
 test:
 	@go test -race -timeout $(TIMEOUT) $(PACKAGES)
