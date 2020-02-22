@@ -1,7 +1,3 @@
-.PHONY: dist
-dist:
-	@godownloader .goreleaser.yml > bin/install
-
 .PHONY: format
 format:
 	@goimports -local $(LOCAL) -ungroup -w $(PATHS)

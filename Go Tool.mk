@@ -5,9 +5,10 @@
 include src/common/env.mk
 include src/go/env.mk
 include src/go/deps.mk
-include src/go/build.mk
 include src/go/test.unit.mk
 include src/go/dev.mk
+include src/go/build.mk
+include src/go/dist.mk
 
 .PHONY: clean
 clean: build-clean deps-clean install-clean test-clean
@@ -16,4 +17,4 @@ clean: build-clean deps-clean install-clean test-clean
 env: go-env build-env
 
 .PHONY: refresh
-refresh: update deps generate format test build
+refresh: deps-shake update deps generate format test build

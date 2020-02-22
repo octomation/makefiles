@@ -41,12 +41,16 @@ go-env:
 
 .PHONY: deps
 deps:
-	@go mod tidy
+	@go mod download
 	@if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi
 
 .PHONY: deps-clean
 deps-clean:
 	@go clean -modcache
+
+.PHONY: deps-shake
+deps-shake:
+	@go mod tidy
 
 .PHONY: update
 update: selector = '{{if not (or .Main .Indirect)}}{{.Path}}{{end}}'

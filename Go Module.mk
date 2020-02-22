@@ -6,3 +6,13 @@ include src/common/env.mk
 include src/go/env.mk
 include src/go/deps.mk
 include src/go/test.unit.mk
+include src/go/dev.mk
+
+.PHONY: clean
+clean: deps-clean test-clean
+
+.PHONY: env
+env: go-env
+
+.PHONY: refresh
+refresh: deps-shake update deps generate format test
