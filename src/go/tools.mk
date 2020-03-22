@@ -1,4 +1,4 @@
-TOOLFLAGS = $(GOFLAGS)
+TOOLFLAGS = -mod=
 
 .PHONY: tools-env
 tools-env:
