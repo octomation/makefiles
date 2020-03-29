@@ -26,8 +26,8 @@ update:
 		packages="`egg deps list`"; \
 	else \
 		packages="`go list -f $(selector) -m all`"; \
-	fi; go get -d -mod= -u $$packages
+	fi; go get -d -u $$packages
 
 .PHONY: update-all
 update-all:
-	@go get -d -mod= -u ./...
+	@go get -d -u ./...
