@@ -113,37 +113,18 @@ test-with-coverage:
 test-with-coverage-profile:
 	@go test -cover -covermode count -coverprofile c.out -timeout $(TIMEOUT) $(PACKAGES)
 
-.PHONY: go1.11-alpine
-go1.11-alpine:
+define go_tpl
+.PHONY: go$(1)
+go$(1):
 	docker run \
 		--rm -it \
 		-v $(PWD):/src \
 		-w /src \
-		golang:1.11-alpine bash
+		golang:$(1) bash
+endef
 
-.PHONY: go1.12-alpine
-go1.12-alpine:
-	docker run \
-		--rm -it \
-		-v $(PWD):/src \
-		-w /src \
-		golang:1.12-alpine bash
-
-.PHONY: go1.13-alpine
-go1.13-alpine:
-	docker run \
-		--rm -it \
-		-v $(PWD):/src \
-		-w /src \
-		golang:1.13-alpine bash
-
-.PHONY: go1.14-alpine
-go1.14-alpine:
-	docker run \
-		--rm -it \
-		-v $(PWD):/src \
-		-w /src \
-		golang:1.14-alpine bash
+render_go_tpl = $(eval $(call go_tpl,$(version)))
+$(foreach version,1.11 1.12 1.13 1.14,$(render_go_tpl))
 
 
 .PHONY: clean
