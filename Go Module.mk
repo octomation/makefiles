@@ -7,6 +7,7 @@ include src/go/env.mk
 include src/go/deps.mk
 include src/go/dev.mk
 include src/go/test.unit.mk
+include src/docker/go.mk
 
 .PHONY: clean
 clean: deps-clean test-clean

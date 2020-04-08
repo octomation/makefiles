@@ -10,6 +10,7 @@ include src/go/test.unit.mk
 include src/go/build.mk
 include src/go/dist.mk
 include src/go/tools.mk
+include src/docker/go.mk
 
 .PHONY: clean
 clean: build-clean deps-clean install-clean test-clean
