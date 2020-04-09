@@ -67,7 +67,7 @@ update:
 	@if command -v egg > /dev/null; then \
 		packages="`egg deps list`"; \
 	else \
-		packages="`go list -f $(selector) -m all`"; \
+		packages="`go list -f $(selector) -m -mod=readonly all`"; \
 	fi; \
 	if [[ "`go version`" == *1.1[1-3]* ]]; then \
 		go get -d -mod= -u $$packages; \
@@ -78,11 +78,11 @@ update:
 
 .PHONY: update-all
 update-all:
-	@if [[ $(go version) == *1.1[1-3]* ]]; then \
+	@if [[ "`go version`" == *1.1[1-3]* ]]; then \
 		go get -d -mod= -u ./...; \
 	else \
 		go get -d -u ./...; \
-	fi \
+	fi; \
 	if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi
 
 .PHONY: test

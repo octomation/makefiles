@@ -1,6 +1,10 @@
 .PHONY: format
 format:
-	@goimports -local $(LOCAL) -ungroup -w $(PATHS)
+	@if command -v goimports > /dev/null; then \
+		goimports -local $(LOCAL) -ungroup -w $(PATHS); \
+	else \
+		gofmt -s -w $(PATHS); \
+	fi
 
 .PHONY: go-generate
 go-generate:
@@ -8,4 +12,8 @@ go-generate:
 
 .PHONY: lint
 lint:
-	@golangci-lint run ./...
+	@if command -v golangci-lint > /dev/null; then \
+		golangci-lint run ./...; \
+	else \
+		go vet $(PACKAGES); \
+	fi
