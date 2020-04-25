@@ -8,5 +8,5 @@ go$(1):
 		golang:$(1) bash
 endef
 
-render_go_tpl = $(eval $(call go_tpl,$(version)))
-$(foreach version,1.11 1.12 1.13 1.14,$(render_go_tpl))
+render_go_tpl = $(eval $(call go_tpl, $(version)))
+$(foreach version, $(GO_VERSIONS), $(render_go_tpl))

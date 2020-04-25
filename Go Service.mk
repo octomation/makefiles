@@ -12,6 +12,8 @@ include src/go/dist.mk
 include src/go/tools.mk
 include src/docker/go.mk
 
+GO_VERSIONS = 1.12 1.13 1.14
+
 .PHONY: clean
 clean: build-clean deps-clean install-clean test-clean
 
