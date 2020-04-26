@@ -1,6 +1,7 @@
 # sourced by https://github.com/octomation/makefiles
 
 .DEFAULT_GOAL = test-with-coverage
+GO_VERSIONS   = 1.12 1.13 1.14
 
 include src/common/env.mk
 include src/go/env.mk
@@ -11,8 +12,6 @@ include src/go/build.mk
 include src/go/dist.mk
 include src/go/tools.mk
 include src/docker/go.mk
-
-GO_VERSIONS = 1.12 1.13 1.14
 
 .PHONY: clean
 clean: build-clean deps-clean install-clean test-clean

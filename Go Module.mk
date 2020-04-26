@@ -1,6 +1,7 @@
 # sourced by https://github.com/octomation/makefiles
 
 .DEFAULT_GOAL = test-with-coverage
+GO_VERSIONS   = 1.11 1.12 1.13 1.14
 
 include src/common/env.mk
 include src/go/env.mk

@@ -1,4 +1,3 @@
-GO_VERSIONS = 1.11 1.12 1.13 1.14
 GO111MODULE = on
 GOFLAGS     = -mod=vendor
 GOPRIVATE   = go.octolab.net
@@ -24,7 +23,6 @@ export GOPROXY     := $(GOPROXY)
 
 .PHONY: go-env
 go-env:
-	@echo "GO_VERSIONS: $(GO_VERSIONS)"
 	@echo "GO111MODULE: `go env GO111MODULE`"
 	@echo "GOFLAGS:     $(strip `go env GOFLAGS`)"
 	@echo "GOPRIVATE:   $(strip `go env GOPRIVATE`)"
