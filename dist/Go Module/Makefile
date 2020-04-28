@@ -5,8 +5,8 @@ GO_VERSIONS   = 1.11 1.12 1.13 1.14
 
 SHELL := /bin/bash -euo pipefail # `explain set -euo pipefail`
 
-OS   = $(shell uname -s)
-ARCH = $(shell uname -m)
+OS   = $(shell uname -s | tr '[:upper:]' '[:lower:]')
+ARCH = $(shell uname -m | tr '[:upper:]' '[:lower:]')
 
 GO111MODULE = on
 GOFLAGS     = -mod=vendor

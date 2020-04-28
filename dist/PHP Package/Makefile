@@ -2,7 +2,7 @@
 
 SHELL := /bin/bash -euo pipefail # `explain set -euo pipefail`
 
-OS   = $(shell uname -s)
-ARCH = $(shell uname -m)
+OS   = $(shell uname -s | tr '[:upper:]' '[:lower:]')
+ARCH = $(shell uname -m | tr '[:upper:]' '[:lower:]')
 
 
