@@ -10,19 +10,19 @@ deps-check:
 deps-clean:
 	@go clean -modcache
 
-.PHONY: deps-shake
-deps-shake:
-	@go mod tidy
-	@if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi
-
-.PHONY: module-deps
-module-deps:
+.PHONY: deps-fetch
+deps-fetch:
 	@go mod download
 	@if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi
 
-.PHONY: update
-update: selector = '{{if not (or .Main .Indirect)}}{{.Path}}{{end}}'
-update:
+.PHONY: deps-tidy
+deps-tidy:
+	@go mod tidy
+	@if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi
+
+.PHONY: deps-update
+deps-update: selector = '{{if not (or .Main .Indirect)}}{{.Path}}{{end}}'
+deps-update:
 	@if command -v egg > /dev/null; then \
 		packages="`egg deps list`"; \
 	else \
@@ -35,8 +35,8 @@ update:
 	fi; \
 	if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi
 
-.PHONY: update-all
-update-all:
+.PHONY: deps-update-all
+deps-update-all:
 	@if [[ "`go version`" == *1.1[1-3]* ]]; then \
 		go get -d -mod= -u ./...; \
 	else \

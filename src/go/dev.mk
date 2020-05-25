@@ -1,5 +1,5 @@
-.PHONY: format
-format:
+.PHONY: go-fmt
+go-fmt:
 	@if command -v goimports > /dev/null; then \
 		goimports -local $(LOCAL) -ungroup -w $(PATHS); \
 	else \
