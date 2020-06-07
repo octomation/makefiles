@@ -1,7 +1,7 @@
 # sourced by https://github.com/octomation/makefiles
 
 .DEFAULT_GOAL = test-with-coverage
-GIT_HOOKS     = post-merge pre-commit
+GIT_HOOKS     = post-merge pre-commit pre-push
 GO_VERSIONS   = 1.13 1.14
 
 include src/common/env.mk
