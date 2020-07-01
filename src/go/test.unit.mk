@@ -13,3 +13,7 @@ test-with-coverage:
 .PHONY: test-with-coverage-profile
 test-with-coverage-profile:
 	@go test -cover -covermode count -coverprofile c.out -timeout $(TIMEOUT) $(PACKAGES)
+
+.PHONY: test-with-coverage-report
+test-with-coverage-report: test-with-coverage-profile
+	@go tool cover -html c.out
