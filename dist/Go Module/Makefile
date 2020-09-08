@@ -168,6 +168,7 @@ endif
 
 .PHONY: init
 init: deps test lint hooks
+	@git config core.autocrlf input
 
 .PHONY: clean
 clean: deps-clean test-clean

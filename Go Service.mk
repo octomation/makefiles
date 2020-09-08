@@ -17,6 +17,7 @@ include src/docker/go.mk
 
 .PHONY: init
 init: deps test lint hooks
+	@git config core.autocrlf input
 
 .PHONY: clean
 clean: build-clean deps-clean install-clean test-clean
