@@ -12,27 +12,27 @@ include src/go/test.unit.mk
 include src/git/hooks.mk
 include src/docker/go.mk
 
-.PHONY: init
 init: deps test lint hooks
 	@git config core.autocrlf input
+.PHONY: init
 
-.PHONY: clean
 clean: deps-clean test-clean
+.PHONY: clean
 
-.PHONY: deps
 deps: deps-fetch
+.PHONY: deps
 
-.PHONY: env
 env: go-env
+.PHONY: env
 
-.PHONY: format
 format: go-fmt
+.PHONY: format
 
-.PHONY: generate
 generate: go-generate format
+.PHONY: generate
 
-.PHONY: refresh
 refresh: deps-tidy update deps generate format test
+.PHONY: refresh
 
-.PHONY: update
 update: deps-update
+.PHONY: update

@@ -2,10 +2,10 @@
 
 .DEFAULT_GOAL = init
 
-.PHONY: init
 init:
 	@git submodule update --init --recursive
+.PHONY: init
 
-.PHONY: pull
 pull:
 	@git submodule update --recursive --remote
+.PHONY: pull

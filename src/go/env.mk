@@ -21,7 +21,6 @@ export GOFLAGS     := $(GOFLAGS)
 export GOPRIVATE   := $(GOPRIVATE)
 export GOPROXY     := $(GOPROXY)
 
-.PHONY: go-env
 go-env:
 	@echo "GO111MODULE: `go env GO111MODULE`"
 	@echo "GOFLAGS:     $(strip `go env GOFLAGS`)"
@@ -32,3 +31,4 @@ go-env:
 	@echo "PACKAGES:    $(PACKAGES)"
 	@echo "PATHS:       $(strip $(PATHS))"
 	@echo "TIMEOUT:     $(TIMEOUT)"
+.PHONY: go-env

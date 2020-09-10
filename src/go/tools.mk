@@ -1,11 +1,10 @@
 TOOLFLAGS = -mod=
 
-.PHONY: tools-env
 tools-env:
 	@echo "GOBIN:       `go env GOBIN`"
 	@echo "TOOLFLAGS:   $(TOOLFLAGS)"
+.PHONY: tools-env
 
-.PHONY: toolset
 toolset:
 	@( \
 		GOFLAGS=$(TOOLFLAGS); \
@@ -15,3 +14,4 @@ toolset:
 		if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi; \
 		go generate tools.go; \
 	)
+.PHONY: toolset

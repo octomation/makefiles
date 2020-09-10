@@ -8,7 +8,6 @@ MAIN    = $(MODULE)
 export GOBIN := $(BINPATH)
 export PATH  := $(BINPATH):$(PATH)
 
-.PHONY: build-env
 build-env:
 	@echo "BINARY:      $(BINARY)"
 	@echo "BINPATH:     $(BINPATH)"
@@ -18,19 +17,20 @@ build-env:
 	@echo "LDFLAGS:     $(LDFLAGS)"
 	@echo "MAIN:        $(MAIN)"
 	@echo "PATH:        $$PATH"
+.PHONY: build-env
 
-.PHONY: build
 build:
 	@go build -o $(BINARY) $(LDFLAGS) $(MAIN)
+.PHONY: build
 
-.PHONY: build-clean
 build-clean:
 	@rm -f $(BINARY)
+.PHONY: build-clean
 
-.PHONY: install
 install:
 	@go install $(LDFLAGS) $(MAIN)
+.PHONY: install
 
-.PHONY: install-clean
 install-clean:
 	@go clean -cache
+.PHONY: install-clean

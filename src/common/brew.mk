@@ -1,3 +1,3 @@
-.PHONY: brew
 brew:
 	@brew bundle
+.PHONY: brew
