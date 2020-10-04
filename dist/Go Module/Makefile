@@ -116,14 +116,16 @@ test-clean:
 .PHONY: test-clean
 
 test-with-coverage:
-	@go test -cover -timeout $(TIMEOUT) $(PACKAGES) | column -t | sort -r
+	@go test \
+		-cover \
+		-covermode atomic \
+		-coverprofile c.out \
+		-race \
+		-timeout $(TIMEOUT) \
+		$(PACKAGES) | column -t | sort -r
 .PHONY: test-with-coverage
 
-test-with-coverage-profile:
-	@go test -cover -covermode count -coverprofile c.out -timeout $(TIMEOUT) $(PACKAGES)
-.PHONY: test-with-coverage-profile
-
-test-with-coverage-report: test-with-coverage-profile
+test-with-coverage-report: test-with-coverage
 	@go tool cover -html c.out
 .PHONY: test-with-coverage-report
 
@@ -131,9 +133,9 @@ test-integration:
 	@go test \
 		-cover \
 		-covermode atomic \
+		-coverprofile integration.out \
 		-race \
 		-tags=integration \
-		-coverprofile integration.out \
 		./... | column -t | sort -r
 .PHONY: test-integration
 

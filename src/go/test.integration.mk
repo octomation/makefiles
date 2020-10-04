@@ -2,9 +2,9 @@ test-integration:
 	@go test \
 		-cover \
 		-covermode atomic \
+		-coverprofile integration.out \
 		-race \
 		-tags=integration \
-		-coverprofile integration.out \
 		./... | column -t | sort -r
 .PHONY: test-integration
 
