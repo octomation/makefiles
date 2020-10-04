@@ -1,4 +1,4 @@
-TOOLFLAGS = -mod=
+TOOLFLAGS ?= -mod=
 
 tools-env:
 	@echo "GOBIN:       `go env GOBIN`"

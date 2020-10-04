@@ -4,20 +4,20 @@
 GIT_HOOKS     = post-merge pre-commit pre-push
 GO_VERSIONS   = 1.14 1.15
 
-SHELL := /bin/bash -euo pipefail # `explain set -euo pipefail`
+OS    := $(shell uname -s | tr '[:upper:]' '[:lower:]')
+ARCH  := $(shell uname -m | tr '[:upper:]' '[:lower:]')
 
-OS   = $(shell uname -s | tr '[:upper:]' '[:lower:]')
-ARCH = $(shell uname -m | tr '[:upper:]' '[:lower:]')
+SHELL ?= /bin/bash -euo pipefail
 
-GO111MODULE = on
-GOFLAGS     = -mod=vendor
-GOPRIVATE   = go.octolab.net
-GOPROXY     = direct
-LOCAL       = $(MODULE)
-MODULE      = `GO111MODULE=on go list -m $(GOFLAGS)`
-PACKAGES    = `GO111MODULE=on go list $(GOFLAGS) ./...`
-PATHS       = $(shell echo $(PACKAGES) | sed -e "s|$(MODULE)/||g" | sed -e "s|$(MODULE)|$(PWD)/*.go|g")
-TIMEOUT     = 1s
+GO111MODULE ?= on
+GOFLAGS     ?= -mod=vendor
+GOPRIVATE   ?= go.octolab.net
+GOPROXY     ?= direct
+LOCAL       ?= $(MODULE)
+MODULE      ?= `GO111MODULE=on go list -m $(GOFLAGS)`
+PACKAGES    ?= `GO111MODULE=on go list $(GOFLAGS) ./...`
+PATHS       ?= $(shell echo $(PACKAGES) | sed -e "s|$(MODULE)/||g" | sed -e "s|$(MODULE)|$(PWD)/*.go|g")
+TIMEOUT     ?= 1s
 
 ifeq (, $(PACKAGES))
 	PACKAGES = $(MODULE)
@@ -127,12 +127,12 @@ test-with-coverage-report: test-with-coverage-profile
 	@go tool cover -html c.out
 .PHONY: test-with-coverage-report
 
-BINARY  = $(BINPATH)/$(shell basename $(MAIN))
-BINPATH = $(PWD)/bin/$(OS)/$(ARCH)
-COMMIT  = $(shell git rev-parse --verify HEAD)
-DATE    = $(shell date +%Y-%m-%dT%T%Z)
-LDFLAGS = -ldflags "-s -w -X main.commit=$(COMMIT) -X main.date=$(DATE)"
-MAIN    = $(MODULE)
+BINARY  ?= $(BINPATH)/$(shell basename $(MAIN))
+BINPATH ?= $(PWD)/bin/$(OS)/$(ARCH)
+COMMIT  ?= $(shell git rev-parse --verify HEAD)
+DATE    ?= $(shell date +%Y-%m-%dT%T%Z)
+LDFLAGS ?= -ldflags "-s -w -X main.commit=$(COMMIT) -X main.date=$(DATE)"
+MAIN    ?= $(MODULE)
 
 export GOBIN := $(BINPATH)
 export PATH  := $(BINPATH):$(PATH)
@@ -172,7 +172,7 @@ dist-dump:
 	@godownloader .goreleaser.yml > bin/install
 .PHONY: dist-dump
 
-TOOLFLAGS = -mod=
+TOOLFLAGS ?= -mod=
 
 tools-env:
 	@echo "GOBIN:       `go env GOBIN`"

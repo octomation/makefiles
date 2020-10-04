@@ -1,9 +1,9 @@
-BINARY  = $(BINPATH)/$(shell basename $(MAIN))
-BINPATH = $(PWD)/bin/$(OS)/$(ARCH)
-COMMIT  = $(shell git rev-parse --verify HEAD)
-DATE    = $(shell date +%Y-%m-%dT%T%Z)
-LDFLAGS = -ldflags "-s -w -X main.commit=$(COMMIT) -X main.date=$(DATE)"
-MAIN    = $(MODULE)
+BINARY  ?= $(BINPATH)/$(shell basename $(MAIN))
+BINPATH ?= $(PWD)/bin/$(OS)/$(ARCH)
+COMMIT  ?= $(shell git rev-parse --verify HEAD)
+DATE    ?= $(shell date +%Y-%m-%dT%T%Z)
+LDFLAGS ?= -ldflags "-s -w -X main.commit=$(COMMIT) -X main.date=$(DATE)"
+MAIN    ?= $(MODULE)
 
 export GOBIN := $(BINPATH)
 export PATH  := $(BINPATH):$(PATH)
