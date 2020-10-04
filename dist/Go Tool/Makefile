@@ -127,6 +127,20 @@ test-with-coverage-report: test-with-coverage-profile
 	@go tool cover -html c.out
 .PHONY: test-with-coverage-report
 
+test-integration:
+	@go test \
+		-cover \
+		-covermode atomic \
+		-race \
+		-tags=integration \
+		-coverprofile integration.out \
+		./... | column -t | sort -r
+.PHONY: test-integration
+
+test-integration-report: test-integration
+	@go tool cover -html integration.out
+.PHONY: test-integration-report
+
 BINARY  ?= $(BINPATH)/$(shell basename $(MAIN))
 BINPATH ?= $(PWD)/bin/$(OS)/$(ARCH)
 COMMIT  ?= $(shell git rev-parse --verify HEAD)
