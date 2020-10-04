@@ -12,9 +12,12 @@ import (
 )
 
 const (
-	distributionDir  = "dist"
-	includeDirective = "include "
-	outputFilename   = "Makefile"
+	distributionDir = "dist"
+	outputFilename  = "Makefile"
+
+	// https://www.gnu.org/software/make/manual/html_node/Include.html
+	includeDirective  = "include "
+	sincludeDirective = "-include "
 )
 
 func main() {
@@ -65,9 +68,16 @@ func (makefile Makefile) AppendTo(output io.Writer) error {
 	scanner.Split(bufio.ScanLines)
 	for scanner.Scan() {
 		text := scanner.Text()
-		if !strings.HasPrefix(text, includeDirective) {
+		if !strings.HasPrefix(text, includeDirective) && !strings.HasPrefix(text, sincludeDirective) {
 			if _, err := fmt.Fprintln(output, text); err != nil {
 				return err
+			}
+			continue
+		}
+		if strings.HasPrefix(text, sincludeDirective) {
+			name := strings.TrimSpace(strings.TrimPrefix(text, sincludeDirective))
+			if err := Makefile(name).AppendTo(output); err == nil {
+				_, _ = fmt.Fprintln(output)
 			}
 			continue
 		}
