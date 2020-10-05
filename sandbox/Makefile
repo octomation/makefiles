@@ -5,9 +5,10 @@ AT := @
 verbose:
 	$(eval AT :=)
 	@echo > /dev/null
+.PHONY: verbose
 
-.PHONY: test
 test:
 	$(AT) echo test
+.PHONY: test
 
 # ---
