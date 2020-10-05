@@ -244,6 +244,17 @@ $(foreach version,$(GO_VERSIONS),$(render_go_tpl))
 endif
 
 
+server: BINARY = $(BINPATH)/server
+server: MAIN   = ./cmd/server/main.go
+server: build
+.PHONY: server
+
+client: BINARY = $(BINPATH)/client
+client: MAIN   = ./cmd/client/main.go
+client: build
+.PHONY: client
+
+
 init: deps test lint hooks
 	@git config core.autocrlf input
 .PHONY: init
