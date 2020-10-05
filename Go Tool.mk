@@ -5,6 +5,7 @@ GIT_HOOKS     = post-merge pre-commit pre-push
 GO_VERSIONS   = 1.14 1.15
 
 include src/common/env.mk
+include src/common/helpers.mk
 include src/go/env.mk
 include src/go/deps.mk
 include src/go/dev.mk
