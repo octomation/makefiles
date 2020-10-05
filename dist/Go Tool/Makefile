@@ -201,7 +201,7 @@ toolset:
 		cd tools; \
 		go mod tidy; \
 		if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi; \
-		go generate tools.go; \
+		go generate -tags tools tools.go; \
 	)
 .PHONY: toolset
 
