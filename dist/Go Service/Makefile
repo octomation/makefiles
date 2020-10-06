@@ -178,6 +178,10 @@ build:
 	@go build -o $(BINARY) $(LDFLAGS) $(MAIN)
 .PHONY: build
 
+build-with-race:
+	@go build -race -o $(BINARY) $(LDFLAGS) $(MAIN)
+.PHONY: build-with-race
+
 build-clean:
 	@rm -f $(BINARY)
 .PHONY: build-clean
@@ -258,6 +262,11 @@ server: BINARY = $(BINPATH)/server
 server: MAIN   = ./cmd/server/main.go
 server: build
 .PHONY: server
+
+server-with-race: BINARY = $(BINPATH)/server-race
+server-with-race: MAIN   = ./cmd/server/main.go
+server-with-race: build-with-race
+.PHONY: server-with-race
 
 client: BINARY = $(BINPATH)/client
 client: MAIN   = ./cmd/client/main.go

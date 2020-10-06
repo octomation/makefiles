@@ -178,6 +178,10 @@ build:
 	@go build -o $(BINARY) $(LDFLAGS) $(MAIN)
 .PHONY: build
 
+build-with-race:
+	@go build -race -o $(BINARY) $(LDFLAGS) $(MAIN)
+.PHONY: build-with-race
+
 build-clean:
 	@rm -f $(BINARY)
 .PHONY: build-clean
