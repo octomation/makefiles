@@ -1,5 +1,5 @@
 GO111MODULE ?= on
-GOFLAGS     ?= -mod=vendor
+GOFLAGS     ?= -mod=
 GOPRIVATE   ?= go.octolab.net
 GOPROXY     ?= direct
 LOCAL       ?= $(MODULE)
