@@ -6,6 +6,10 @@ test-clean:
 	@go clean -testcache
 .PHONY: test-clean
 
+test-quick:
+	@go test -timeout $(TIMEOUT) $(PACKAGES)
+.PHONY: test-quick
+
 test-with-coverage:
 	@go test \
 		-cover \
