@@ -9,6 +9,7 @@ include src/common/helpers.mk
 include src/go/env.mk
 include src/go/deps.mk
 include src/go/dev.mk
+include src/go/docs.mk
 include src/go/test.unit.mk
 include src/go/test.integration.mk
 include src/git/hooks.mk
