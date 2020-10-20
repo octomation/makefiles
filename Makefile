@@ -1,5 +1,5 @@
 .DEFAULT_GOAL = compile
 
 compile:
-	@ls | grep .mk | go run dist/compiler.go
+	@ls | grep .mk | maintainer makefile build
 .PHONY: compile
