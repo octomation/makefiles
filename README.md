@@ -4,6 +4,10 @@
 
 [![Mirror][mirror.icon]][mirror.page]
 
+## 🔗 Dependencies
+
+- [Install `maintainer` tool](https://github.com/octomation/maintainer#-installation).
+
 ## 🤼‍♂️ How to
 
 1. Create your own Makefile based on pieces from the `src`.
