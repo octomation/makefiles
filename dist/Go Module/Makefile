@@ -55,6 +55,8 @@ go-env:
 	@echo "TIMEOUT:     $(TIMEOUT)"
 .PHONY: go-env
 
+export GOBIN := $(PWD)/bin/$(OS)/$(ARCH)
+
 deps-check:
 	@go mod verify
 	@if command -v egg > /dev/null; then \
@@ -169,47 +171,6 @@ test-integration-report: test-integration
 	@go tool cover -html integration.out
 .PHONY: test-integration-report
 
-BINARY  ?= $(BINPATH)/$(shell basename $(MAIN))
-BINPATH ?= $(PWD)/bin/$(OS)/$(ARCH)
-COMMIT  ?= $(shell git rev-parse --verify HEAD)
-DATE    ?= $(shell date +%Y-%m-%dT%T%Z)
-LDFLAGS ?= -ldflags "-s -w -X main.commit=$(COMMIT) -X main.date=$(DATE)"
-MAIN    ?= $(MODULE)
-
-export GOBIN := $(BINPATH)
-export PATH  := $(BINPATH):$(PATH)
-
-build-env:
-	@echo "BINARY:      $(BINARY)"
-	@echo "BINPATH:     $(BINPATH)"
-	@echo "COMMIT:      $(COMMIT)"
-	@echo "DATE:        $(DATE)"
-	@echo "GOBIN:       `go env GOBIN`"
-	@echo "LDFLAGS:     $(LDFLAGS)"
-	@echo "MAIN:        $(MAIN)"
-	@echo "PATH:        $$PATH"
-.PHONY: build-env
-
-build:
-	@go build -o $(BINARY) $(LDFLAGS) $(MAIN)
-.PHONY: build
-
-build-with-race:
-	@go build -race -o $(BINARY) $(LDFLAGS) $(MAIN)
-.PHONY: build-with-race
-
-build-clean:
-	@rm -f $(BINARY)
-.PHONY: build-clean
-
-install:
-	@go install $(LDFLAGS) $(MAIN)
-.PHONY: install
-
-install-clean:
-	@go clean -cache
-.PHONY: install-clean
-
 TOOLFLAGS ?= -mod=
 
 tools-env:
@@ -266,17 +227,22 @@ $(foreach version,$(GO_VERSIONS),$(render_go_tpl))
 endif
 
 
+export PATH := `go env GOBIN`:$(PATH)
+
+
 init: deps test lint hooks
 	@git config core.autocrlf input
 .PHONY: init
 
-clean: build-clean deps-clean install-clean test-clean
+clean: deps-clean test-clean
 .PHONY: clean
 
 deps: deps-fetch toolset
 .PHONY: deps
 
-env: go-env build-env tools-env
+env: go-env tools-env
+env:
+	@echo "PATH:        $$PATH"
 .PHONY: env
 
 format: go-fmt

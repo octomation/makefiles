@@ -55,6 +55,8 @@ go-env:
 	@echo "TIMEOUT:     $(TIMEOUT)"
 .PHONY: go-env
 
+export GOBIN := $(PWD)/bin/$(OS)/$(ARCH)
+
 deps-check:
 	@go mod verify
 	@if command -v egg > /dev/null; then \
@@ -169,25 +171,18 @@ test-integration-report: test-integration
 	@go tool cover -html integration.out
 .PHONY: test-integration-report
 
-BINARY  ?= $(BINPATH)/$(shell basename $(MAIN))
-BINPATH ?= $(PWD)/bin/$(OS)/$(ARCH)
+BINARY  ?= `go env GOBIN`/$(shell basename $(MAIN))
 COMMIT  ?= $(shell git rev-parse --verify HEAD)
 DATE    ?= $(shell date +%Y-%m-%dT%T%Z)
 LDFLAGS ?= -ldflags "-s -w -X main.commit=$(COMMIT) -X main.date=$(DATE)"
 MAIN    ?= $(MODULE)
 
-export GOBIN := $(BINPATH)
-export PATH  := $(BINPATH):$(PATH)
-
 build-env:
 	@echo "BINARY:      $(BINARY)"
-	@echo "BINPATH:     $(BINPATH)"
 	@echo "COMMIT:      $(COMMIT)"
 	@echo "DATE:        $(DATE)"
-	@echo "GOBIN:       `go env GOBIN`"
 	@echo "LDFLAGS:     $(LDFLAGS)"
 	@echo "MAIN:        $(MAIN)"
-	@echo "PATH:        $$PATH"
 .PHONY: build-env
 
 build:
@@ -274,6 +269,8 @@ $(foreach version,$(GO_VERSIONS),$(render_go_tpl))
 endif
 
 
+export PATH := `go env GOBIN`:$(PATH)
+
 server: BINARY = $(BINPATH)/server
 server: MAIN   = ./cmd/server/main.go
 server: build
@@ -301,6 +298,8 @@ deps: deps-fetch toolset
 .PHONY: deps
 
 env: go-env build-env tools-env
+env:
+	@echo "PATH:        $$PATH"
 .PHONY: env
 
 format: go-fmt

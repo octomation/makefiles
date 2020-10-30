@@ -8,6 +8,7 @@ GO111MODULE   = on
 include src/common/env.mk
 include src/common/helpers.mk
 include src/go/env.mk
+include src/go/bin.mk
 include src/go/deps.mk
 include src/go/dev.mk
 include src/go/docs.mk
@@ -18,6 +19,9 @@ include src/go/dist.mk
 include src/go/tools.mk
 include src/git/hooks.mk
 include src/docker/go.mk
+
+export PATH := `go env GOBIN`:$(PATH)
+
 
 init: deps test lint hooks
 	@git config core.autocrlf input
@@ -30,6 +34,8 @@ deps: deps-fetch toolset
 .PHONY: deps
 
 env: go-env build-env tools-env
+env:
+	@echo "PATH:        $$PATH"
 .PHONY: env
 
 format: go-fmt
