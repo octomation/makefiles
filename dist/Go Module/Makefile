@@ -169,6 +169,64 @@ test-integration-report: test-integration
 	@go tool cover -html integration.out
 .PHONY: test-integration-report
 
+BINARY  ?= $(BINPATH)/$(shell basename $(MAIN))
+BINPATH ?= $(PWD)/bin/$(OS)/$(ARCH)
+COMMIT  ?= $(shell git rev-parse --verify HEAD)
+DATE    ?= $(shell date +%Y-%m-%dT%T%Z)
+LDFLAGS ?= -ldflags "-s -w -X main.commit=$(COMMIT) -X main.date=$(DATE)"
+MAIN    ?= $(MODULE)
+
+export GOBIN := $(BINPATH)
+export PATH  := $(BINPATH):$(PATH)
+
+build-env:
+	@echo "BINARY:      $(BINARY)"
+	@echo "BINPATH:     $(BINPATH)"
+	@echo "COMMIT:      $(COMMIT)"
+	@echo "DATE:        $(DATE)"
+	@echo "GOBIN:       `go env GOBIN`"
+	@echo "LDFLAGS:     $(LDFLAGS)"
+	@echo "MAIN:        $(MAIN)"
+	@echo "PATH:        $$PATH"
+.PHONY: build-env
+
+build:
+	@go build -o $(BINARY) $(LDFLAGS) $(MAIN)
+.PHONY: build
+
+build-with-race:
+	@go build -race -o $(BINARY) $(LDFLAGS) $(MAIN)
+.PHONY: build-with-race
+
+build-clean:
+	@rm -f $(BINARY)
+.PHONY: build-clean
+
+install:
+	@go install $(LDFLAGS) $(MAIN)
+.PHONY: install
+
+install-clean:
+	@go clean -cache
+.PHONY: install-clean
+
+TOOLFLAGS ?= -mod=
+
+tools-env:
+	@echo "GOBIN:       `go env GOBIN`"
+	@echo "TOOLFLAGS:   $(TOOLFLAGS)"
+.PHONY: tools-env
+
+toolset:
+	@( \
+		GOFLAGS=$(TOOLFLAGS); \
+		cd tools; \
+		go mod tidy; \
+		if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi; \
+		go generate -tags tools tools.go; \
+	)
+.PHONY: toolset
+
 ifdef GIT_HOOKS
 
 hooks: unhook
@@ -212,13 +270,13 @@ init: deps test lint hooks
 	@git config core.autocrlf input
 .PHONY: init
 
-clean: deps-clean test-clean
+clean: build-clean deps-clean install-clean test-clean
 .PHONY: clean
 
-deps: deps-fetch
+deps: deps-fetch toolset
 .PHONY: deps
 
-env: go-env
+env: go-env build-env tools-env
 .PHONY: env
 
 format: go-fmt

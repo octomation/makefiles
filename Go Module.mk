@@ -13,6 +13,8 @@ include src/go/dev.mk
 include src/go/docs.mk
 include src/go/test.unit.mk
 include src/go/test.integration.mk
+include src/go/build.mk
+include src/go/tools.mk
 include src/git/hooks.mk
 include src/docker/go.mk
 
@@ -20,13 +22,13 @@ init: deps test lint hooks
 	@git config core.autocrlf input
 .PHONY: init
 
-clean: deps-clean test-clean
+clean: build-clean deps-clean install-clean test-clean
 .PHONY: clean
 
-deps: deps-fetch
+deps: deps-fetch toolset
 .PHONY: deps
 
-env: go-env
+env: go-env build-env tools-env
 .PHONY: env
 
 format: go-fmt
