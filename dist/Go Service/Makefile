@@ -308,7 +308,7 @@ format: go-fmt
 generate: go-generate format
 .PHONY: generate
 
-refresh: deps-tidy update deps generate format test build
+refresh: deps-tidy update deps generate test build
 .PHONY: refresh
 
 update: deps-update
