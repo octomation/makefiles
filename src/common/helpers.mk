@@ -5,5 +5,5 @@ todo:
 		--exclude=Makefile \
 		--text \
 		--color \
-		-nRo -E ' TODO:.*|SkipNow' .
+		-nRo -E ' TODO:.*|SkipNow' . || true
 .PHONY: todo
