@@ -51,3 +51,6 @@ refresh: deps-tidy update deps generate test build
 
 update: deps-update
 .PHONY: update
+
+verify: deps-check generate git-check lint test
+.PHONY: verify

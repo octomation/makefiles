@@ -250,11 +250,11 @@ $(foreach hook,$(GIT_HOOKS),$(render_hook_tpl))
 
 endif
 
-git-verify:
+git-check:
 	@git diff --exit-code >/dev/null
 	@git diff --cached --exit-code >/dev/null
 	@! git ls-files --others --exclude-standard | grep -q ^
-.PHONY: git-verify
+.PHONY: git-check
 
 ifdef GO_VERSIONS
 
@@ -303,3 +303,6 @@ refresh: deps-tidy update deps generate test build
 
 update: deps-update
 .PHONY: update
+
+verify: deps-check generate git-check lint test
+.PHONY: verify
