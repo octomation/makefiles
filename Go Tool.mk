@@ -18,6 +18,7 @@ include src/go/build.mk
 include src/go/dist.mk
 include src/go/tools.mk
 include src/git/hooks.mk
+include src/git/helpers.mk
 include src/docker/go.mk
 
 export PATH := `go env GOBIN`:$(PATH)
