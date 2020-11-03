@@ -6,3 +6,9 @@ todo:
 		--text \
 		-nRo -E ' TODO:.*|SkipNow' . || true
 .PHONY: todo
+
+rmdir:
+	@for dir in `git ls-files --others --exclude-standard --directory`; do \
+		find $${dir%%/} -depth -type d -empty | xargs rmdir; \
+	done
+.PHONY: rmdir
