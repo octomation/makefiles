@@ -21,7 +21,7 @@ include src/git/hooks.mk
 include src/git/helpers.mk
 include src/docker/go.mk
 
-export PATH := `go env GOBIN`:$(PATH)
+export PATH := $(GOBIN):$(PATH)
 
 
 init: deps test lint hooks
@@ -36,7 +36,7 @@ deps: deps-fetch toolset
 
 env: go-env build-env tools-env
 env:
-	@echo "PATH:        $$PATH"
+	@echo "PATH:        $(PATH)"
 .PHONY: env
 
 format: go-fmt
