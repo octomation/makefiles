@@ -5,12 +5,13 @@ tools-env:
 	@echo "TOOLFLAGS:   $(TOOLFLAGS)"
 .PHONY: tools-env
 
+toolset: GOTAGS = tools
 toolset:
 	@( \
 		GOFLAGS=$(TOOLFLAGS); \
 		cd tools; \
 		go mod tidy; \
 		if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi; \
-		go generate -tags tools tools.go; \
+		go generate -tags $(GOTAGS) tools.go; \
 	)
 .PHONY: toolset

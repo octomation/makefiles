@@ -1,15 +1,17 @@
+test-integration: GOTAGS = integration
 test-integration:
 	@go test \
 		-cover \
 		-covermode atomic \
 		-coverprofile integration.out \
 		-race \
-		-tags integration \
+		-tags $(GOTAGS) \
 		./... | column -t | sort -r
 .PHONY: test-integration
 
+test-integration-quick: GOTAGS = integration
 test-integration-quick:
-	@go test -tags integration ./...
+	@go test -tags $(GOTAGS) ./...
 .PHONY: test-integration-quick
 
 test-integration-report: test-integration
