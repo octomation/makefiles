@@ -22,7 +22,7 @@ deps-tidy:
 
 deps-update: selector = '{{if not (or .Main .Indirect)}}{{.Path}}{{end}}'
 deps-update:
-	@if command -v egg > /dev/null; then \
+	$(AT) if command -v egg > /dev/null; then \
 		packages="`egg deps list`"; \
 	else \
 		packages="`go list -f $(selector) -m -mod=readonly all`"; \
@@ -36,7 +36,7 @@ deps-update:
 .PHONY: deps-update
 
 deps-update-all:
-	@if [[ "`go version`" == *1.1[1-3]* ]]; then \
+	$(AT) if [[ "`go version`" == *1.1[1-3]* ]]; then \
 		go get -d -mod= -u ./...; \
 	else \
 		go get -d -u ./...; \

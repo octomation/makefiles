@@ -8,7 +8,7 @@ todo:
 .PHONY: todo
 
 rmdir:
-	@for dir in `git ls-files --others --exclude-standard --directory`; do \
+	$(AT) for dir in `git ls-files --others --exclude-standard --directory`; do \
 		find $${dir%%/} -depth -type d -empty | xargs rmdir; \
 	done
 .PHONY: rmdir

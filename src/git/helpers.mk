@@ -1,5 +1,5 @@
 git-check:
-	@git diff --exit-code >/dev/null
-	@git diff --cached --exit-code >/dev/null
-	@! git ls-files --others --exclude-standard | grep -q ^
+	$(AT) git diff --exit-code >/dev/null
+	$(AT) git diff --cached --exit-code >/dev/null
+	$(AT) ! git ls-files --others --exclude-standard | grep -q ^
 .PHONY: git-check

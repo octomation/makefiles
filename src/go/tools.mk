@@ -7,7 +7,7 @@ tools-env:
 
 toolset: GOTAGS = tools
 toolset:
-	@( \
+	$(AT) ( \
 		GOFLAGS=$(TOOLFLAGS); \
 		cd tools; \
 		go mod tidy; \

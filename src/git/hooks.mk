@@ -1,7 +1,7 @@
 ifdef GIT_HOOKS
 
 hooks: unhook
-	@for hook in $(GIT_HOOKS); do cp githooks/$$hook .git/hooks/; done
+	$(AT) for hook in $(GIT_HOOKS); do cp githooks/$$hook .git/hooks/; done
 .PHONY: hooks
 
 unhook:
