@@ -8,7 +8,7 @@ test-clean:
 
 test-quick: GOTAGS = integration,tools
 test-quick:
-	@go test -run ^Fake$$ -tags $(GOTAGS) ./... | grep -v 'no tests to run'
+	@go test -run ^Fake$$ -tags $(GOTAGS) ./... | { grep -v 'no tests to run' || true; }
 	@go test -timeout $(TIMEOUT) $(PACKAGES)
 .PHONY: test-quick
 

@@ -4,6 +4,7 @@
 GIT_HOOKS     = post-merge pre-commit pre-push
 GO_VERSIONS   = 1.11 1.12 1.13 1.14 1.15
 GO111MODULE   = on
+SHELL         = /bin/bash -euo pipefail
 
 include src/common/env.mk
 include src/common/helpers.mk
