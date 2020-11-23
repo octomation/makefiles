@@ -6,7 +6,7 @@ test-integration:
 		-coverprofile integration.out \
 		-race \
 		-tags $(GOTAGS) \
-		./... | column -t | sort -r
+		./...
 .PHONY: test-integration
 
 test-integration-quick: GOTAGS = integration
