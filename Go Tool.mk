@@ -12,7 +12,6 @@ include src/go/env.mk
 include src/go/bin.mk
 include src/go/deps.mk
 include src/go/dev.mk
-include src/go/docs.mk
 include src/go/test.unit.mk
 include src/go/test.integration.mk
 include src/go/build.mk
