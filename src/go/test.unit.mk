@@ -1,5 +1,10 @@
+GOTEST ?= `command -v gotest`
+ifeq (, $(GOTEST))
+	GOTEST = go test
+endif
+
 test:
-	@go test -race -timeout $(TIMEOUT) $(PACKAGES)
+	@$(GOTEST) -race -timeout $(TIMEOUT) $(PACKAGES)
 .PHONY: test
 
 test-clean:
@@ -9,15 +14,15 @@ test-clean:
 test-quick: GOTAGS = integration,tools
 test-quick:
 	@go test -run ^Fake$$ -tags $(GOTAGS) ./... | { grep -v 'no tests to run' || true; }
-	@go test -timeout $(TIMEOUT) $(PACKAGES)
+	@$(GOTEST) -timeout $(TIMEOUT) $(PACKAGES)
 .PHONY: test-quick
 
 test-verbose:
-	@go test -race -timeout $(TIMEOUT) -v $(PACKAGES)
+	@$(GOTEST) -race -timeout $(TIMEOUT) -v $(PACKAGES)
 .PHONY: test-verbose
 
 test-with-coverage:
-	@go test \
+	@$(GOTEST) \
 		-cover \
 		-covermode atomic \
 		-coverprofile c.out \
