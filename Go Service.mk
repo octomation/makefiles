@@ -8,8 +8,8 @@ SHELL         = /bin/bash -euo pipefail
 
 include src/common/env.mk
 include src/common/helpers.mk
-include src/go/env.mk
 include src/go/bin.mk
+include src/go/env.mk
 include src/go/deps.mk
 include src/go/dev.mk
 include src/go/test.unit.mk
@@ -21,9 +21,6 @@ include src/go/tools.mk
 include src/git/hooks.mk
 include src/git/helpers.mk
 include src/docker/go.mk
-
-export PATH := $(GOBIN):$(PATH)
-
 
 init: deps test lint hooks
 	@git config core.autocrlf input
