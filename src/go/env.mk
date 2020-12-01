@@ -1,12 +1,11 @@
-GO111MODULE ?= on
-GOFLAGS     ?= -mod=
-GOPRIVATE   ?= go.octolab.net
-GOPROXY     ?= direct
-LOCAL       ?= $(MODULE)
-MODULE      ?= `GO111MODULE=on go list -m $(GOFLAGS)`
-PACKAGES    ?= `GO111MODULE=on go list $(GOFLAGS) ./...`
-PATHS       ?= $(shell echo $(PACKAGES) | sed -e "s|$(MODULE)/||g" | sed -e "s|$(MODULE)|$(PWD)/*.go|g")
-TIMEOUT     ?= 1s
+GOFLAGS   ?= -mod=
+GOPRIVATE ?= go.octolab.net
+GOPROXY   ?= direct
+LOCAL     ?= $(MODULE)
+MODULE    ?= `go list -m $(GOFLAGS)`
+PACKAGES  ?= `go list $(GOFLAGS) ./...`
+PATHS     ?= $(shell echo $(PACKAGES) | sed -e "s|$(MODULE)/||g" | sed -e "s|$(MODULE)|$(PWD)/*.go|g")
+TIMEOUT   ?= 1s
 
 ifeq (, $(PACKAGES))
 	PACKAGES = $(MODULE)
@@ -16,13 +15,11 @@ ifeq (, $(PATHS))
 	PATHS = .
 endif
 
-export GO111MODULE := $(GO111MODULE)
-export GOFLAGS     := $(GOFLAGS)
-export GOPRIVATE   := $(GOPRIVATE)
-export GOPROXY     := $(GOPROXY)
+export GOFLAGS   := $(GOFLAGS)
+export GOPRIVATE := $(GOPRIVATE)
+export GOPROXY   := $(GOPROXY)
 
 go-env:
-	@echo "GO111MODULE: `go env GO111MODULE`"
 	@echo "GOFLAGS:     $(strip `go env GOFLAGS`)"
 	@echo "GOPRIVATE:   $(strip `go env GOPRIVATE`)"
 	@echo "GOPROXY:     $(strip `go env GOPROXY`)"
