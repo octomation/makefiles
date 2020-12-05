@@ -1,8 +1,3 @@
-GOTEST ?= `command -v gotest`
-ifeq (, $(GOTEST))
-	GOTEST = go test
-endif
-
 test:
 	@$(GOTEST) -race -timeout $(TIMEOUT) $(PACKAGES)
 .PHONY: test

@@ -1,8 +1,3 @@
-GOTEST ?= `command -v gotest`
-ifeq (, $(GOTEST))
-	GOTEST = go test
-endif
-
 test-integration: GOTAGS = integration
 test-integration:
 	@$(GOTEST) \
