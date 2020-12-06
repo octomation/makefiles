@@ -1,13 +1,12 @@
-BINARY  ?= `go env GOBIN`/$(shell basename $(MAIN))
-COMMIT  ?= $(shell git rev-parse --verify HEAD)
-DATE    ?= $(shell date +%Y-%m-%dT%T%Z)
+BINARY  ?= $(GOBIN)/$(shell basename $(MAIN))
 LDFLAGS ?= -ldflags "-s -w -X main.commit=$(COMMIT) -X main.date=$(DATE)"
 MAIN    ?= $(MODULE)
 
 build-env:
-	@echo "BINARY:      $(BINARY)"
-	@echo "COMMIT:      $(COMMIT)"
 	@echo "DATE:        $(DATE)"
+	@echo "COMMIT:      $(COMMIT)"
+	@echo "RELEASE:     $(RELEASE)"
+	@echo "BINARY:      $(BINARY)"
 	@echo "LDFLAGS:     $(LDFLAGS)"
 	@echo "MAIN:        $(MAIN)"
 .PHONY: build-env
