@@ -15,9 +15,7 @@
 3. See the `dist` directory.
 4. Take profit.
 
----
-
-made with ❤️ for everyone
+<p align="right">made with ❤️ for everyone</p>
 
 [mirror.page]:      https://bitbucket.org/kamilsk/makefiles
 [mirror.icon]:      https://img.shields.io/badge/mirror-bitbucket-blue
