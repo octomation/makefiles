@@ -6,12 +6,12 @@ test-integration:
 		-coverprofile integration.out \
 		-race \
 		-tags $(GOTAGS) \
-		./... $(GOPIPE)
+		./...
 .PHONY: test-integration
 
 test-integration-quick: GOTAGS = integration
 test-integration-quick:
-	@$(GOTEST) -tags $(GOTAGS) ./... $(GOPIPE)
+	@$(GOTEST) -tags $(GOTAGS) ./...
 .PHONY: test-integration-quick
 
 test-integration-report: test-integration
