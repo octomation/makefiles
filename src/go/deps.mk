@@ -28,10 +28,9 @@ deps-update:
 		packages="`go list -f $(selector) -m -mod=readonly all | sed -e 's/$$/@latest/'`"; \
 	fi; \
 	if [[ "$$packages" = "@latest" ]]; then exit; fi; \
-	if [[ "`go version`" == *1.1[1-3]* ]]; then \
-		go get -d -mod= $$packages; \
-	else \
-		go get -d $$packages; \
-	fi; \
-	if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi
+	for package in $$packages; do \
+		go mod edit -require $$package; \
+		go mod download; \
+	done
+	$(AT) $(MAKE) deps-tidy
 .PHONY: deps-update

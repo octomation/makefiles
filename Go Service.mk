@@ -30,7 +30,7 @@ init: deps test lint hooks
 clean: build-clean deps-clean install-clean test-clean
 .PHONY: clean
 
-deps: deps-fetch toolset
+deps: deps-fetch tools-install
 .PHONY: deps
 
 env: go-env build-env tools-env
@@ -47,7 +47,7 @@ generate: go-generate format
 refresh: deps-tidy update deps generate test build
 .PHONY: refresh
 
-update: deps-update
+update: deps-update tools-update
 .PHONY: update
 
 verify: deps-check generate test lint git-check

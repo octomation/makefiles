@@ -143,12 +143,11 @@ deps-update:
 		packages="`go list -f $(selector) -m -mod=readonly all | sed -e 's/$$/@latest/'`"; \
 	fi; \
 	if [[ "$$packages" = "@latest" ]]; then exit; fi; \
-	if [[ "`go version`" == *1.1[1-3]* ]]; then \
-		go get -d -mod= $$packages; \
-	else \
-		go get -d $$packages; \
-	fi; \
-	if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi
+	for package in $$packages; do \
+		go mod edit -require $$package; \
+		go mod download; \
+	done
+	$(AT) $(MAKE) deps-tidy
 .PHONY: deps-update
 
 GODOC_HOST ?= localhost:6060
@@ -279,16 +278,44 @@ tools-env:
 	@echo "TOOLFLAGS:   $(TOOLFLAGS)"
 .PHONY: tools-env
 
-toolset: GOTAGS = tools
-toolset:
-	$(AT) ( \
-		GOFLAGS=$(TOOLFLAGS); \
-		cd tools; \
-		go mod tidy; \
-		if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi; \
-		go generate -tags $(GOTAGS) tools.go; \
-	)
-.PHONY: toolset
+tools-fetch: GOFLAGS = $(TOOLFLAGS)
+tools-fetch:
+	$(AT) cd tools; \
+	go mod download; \
+	if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi
+.PHONY: tools-fetch
+
+tools-tidy: GOFLAGS = $(TOOLFLAGS)
+tools-tidy:
+	$(AT) cd tools; \
+	go mod tidy; \
+	if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi
+.PHONY: tools-tidy
+
+tools-install: GOFLAGS = $(TOOLFLAGS)
+tools-install: GOTAGS = tools
+tools-install: tools-fetch
+	$(AT) cd tools; \
+	go generate -tags $(GOTAGS) tools.go
+.PHONY: tools-install
+
+tools-update: GOFLAGS = $(TOOLFLAGS)
+tools-update: selector = '{{if not (or .Main .Indirect)}}{{.Path}}{{end}}'
+tools-update:
+	$(AT) cd tools; \
+	if command -v egg > /dev/null; then \
+		packages="`egg deps list | tr ' ' '\n' | sed -e 's/$$/@latest/'`"; \
+	else \
+		packages="`go list -f $(selector) -m -mod=readonly all | sed -e 's/$$/@latest/'`"; \
+	fi; \
+	if [[ "$$packages" = "@latest" ]]; then exit; fi; \
+	for package in $$packages; do \
+		go mod edit -require $$package; \
+		go mod download; \
+	done
+	$(AT) if [ -z "$(AT)" ]; then MAKE="$(MAKE) verbose"; else MAKE="$(MAKE)"; fi; \
+	$$MAKE tools-tidy tools-install
+.PHONY: tools-update
 
 ifdef GO_VERSIONS
 
@@ -315,7 +342,7 @@ init: deps test lint hooks
 clean: build-clean deps-clean install-clean test-clean
 .PHONY: clean
 
-deps: deps-fetch toolset
+deps: deps-fetch tools-install
 .PHONY: deps
 
 env: go-env build-env tools-env
@@ -332,7 +359,7 @@ generate: go-generate format
 refresh: deps-tidy update deps generate test build
 .PHONY: refresh
 
-update: deps-update
+update: deps-update tools-update
 .PHONY: update
 
 verify: deps-check generate test lint git-check
