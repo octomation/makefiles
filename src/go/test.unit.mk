@@ -1,20 +1,14 @@
 test:
-	@$(GOTEST) -race -timeout $(TIMEOUT) $(PACKAGES)
+	@$(GOTEST) -race -timeout $(TIMEOUT) $(GOTESTFLAGS) $(PACKAGES)
 .PHONY: test
 
 test-clean:
 	@go clean -testcache
 .PHONY: test-clean
 
-test-quick: GOTAGS = integration,tools
 test-quick:
-	@go test -run ^Fake$$ -tags $(GOTAGS) ./... | { grep -v 'no tests to run' || true; }
-	@$(GOTEST) -timeout $(TIMEOUT) $(PACKAGES)
+	@$(GOTEST) -timeout $(TIMEOUT) $(GOTESTFLAGS) $(PACKAGES)
 .PHONY: test-quick
-
-test-verbose:
-	@$(GOTEST) -race -timeout $(TIMEOUT) -v $(PACKAGES)
-.PHONY: test-verbose
 
 test-with-coverage:
 	@$(GOTEST) \
@@ -23,6 +17,7 @@ test-with-coverage:
 		-coverprofile c.out \
 		-race \
 		-timeout $(TIMEOUT) \
+		$(GOTESTFLAGS) \
 		$(PACKAGES)
 .PHONY: test-with-coverage
 

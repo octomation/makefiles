@@ -48,5 +48,8 @@ refresh: deps-tidy update deps generate test
 update: deps-update tools-update
 .PHONY: update
 
+verbose: make-verbose go-verbose
+.PHONY: verbose
+
 verify: deps-check generate test lint git-check
 .PHONY: verify

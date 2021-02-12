@@ -3,6 +3,7 @@ GOFLAGS     ?= -mod=
 GOPRIVATE   ?= go.octolab.net
 GOPROXY     ?= direct
 GOTEST      ?= $(GOBIN)/testit
+GOTESTFLAGS ?=
 GOTRACEBACK ?= all
 LOCAL       ?= $(MODULE)
 MODULE      ?= `go list -m $(GOFLAGS)`
@@ -40,6 +41,7 @@ go-env:
 	@echo "GOPRIVATE:   $(strip `go env GOPRIVATE`)"
 	@echo "GOPROXY:     $(strip `go env GOPROXY`)"
 	@echo "GOTEST:      $(GOTEST)"
+	@echo "GOTESTFLAGS: $(GOTESTFLAGS)"
 	@echo "GOTRACEBACK: $(GOTRACEBACK)"
 	@echo "LOCAL:       $(LOCAL)"
 	@echo "MODULE:      $(MODULE)"
@@ -47,3 +49,8 @@ go-env:
 	@echo "PATHS:       $(strip $(PATHS))"
 	@echo "TIMEOUT:     $(TIMEOUT)"
 .PHONY: go-env
+
+go-verbose:
+	$(eval GOTESTFLAGS := -v)
+	@echo > /dev/null
+.PHONY: go-verbose

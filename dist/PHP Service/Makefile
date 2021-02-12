@@ -7,10 +7,10 @@ DATE  := $(shell date +%Y-%m-%dT%T%Z)
 
 SHELL ?= /bin/bash -euo pipefail
 
-verbose:
+make-verbose:
 	$(eval AT :=)
 	@echo > /dev/null
-.PHONY: verbose
+.PHONY: make-verbose
 
 todo:
 	@grep \

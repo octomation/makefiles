@@ -13,10 +13,10 @@ DATE  := $(shell date +%Y-%m-%dT%T%Z)
 
 SHELL ?= /bin/bash -euo pipefail
 
-verbose:
+make-verbose:
 	$(eval AT :=)
 	@echo > /dev/null
-.PHONY: verbose
+.PHONY: make-verbose
 
 todo:
 	@grep \
@@ -68,6 +68,7 @@ GOFLAGS     ?= -mod=
 GOPRIVATE   ?= go.octolab.net
 GOPROXY     ?= direct
 GOTEST      ?= $(GOBIN)/testit
+GOTESTFLAGS ?=
 GOTRACEBACK ?= all
 LOCAL       ?= $(MODULE)
 MODULE      ?= `go list -m $(GOFLAGS)`
@@ -105,6 +106,7 @@ go-env:
 	@echo "GOPRIVATE:   $(strip `go env GOPRIVATE`)"
 	@echo "GOPROXY:     $(strip `go env GOPROXY`)"
 	@echo "GOTEST:      $(GOTEST)"
+	@echo "GOTESTFLAGS: $(GOTESTFLAGS)"
 	@echo "GOTRACEBACK: $(GOTRACEBACK)"
 	@echo "LOCAL:       $(LOCAL)"
 	@echo "MODULE:      $(MODULE)"
@@ -112,6 +114,11 @@ go-env:
 	@echo "PATHS:       $(strip $(PATHS))"
 	@echo "TIMEOUT:     $(TIMEOUT)"
 .PHONY: go-env
+
+go-verbose:
+	$(eval GOTESTFLAGS := -v)
+	@echo > /dev/null
+.PHONY: go-verbose
 
 deps-check:
 	@go mod verify
@@ -179,22 +186,16 @@ lint:
 .PHONY: lint
 
 test:
-	@$(GOTEST) -race -timeout $(TIMEOUT) $(PACKAGES)
+	@$(GOTEST) -race -timeout $(TIMEOUT) $(GOTESTFLAGS) $(PACKAGES)
 .PHONY: test
 
 test-clean:
 	@go clean -testcache
 .PHONY: test-clean
 
-test-quick: GOTAGS = integration,tools
 test-quick:
-	@go test -run ^Fake$$ -tags $(GOTAGS) ./... | { grep -v 'no tests to run' || true; }
-	@$(GOTEST) -timeout $(TIMEOUT) $(PACKAGES)
+	@$(GOTEST) -timeout $(TIMEOUT) $(GOTESTFLAGS) $(PACKAGES)
 .PHONY: test-quick
-
-test-verbose:
-	@$(GOTEST) -race -timeout $(TIMEOUT) -v $(PACKAGES)
-.PHONY: test-verbose
 
 test-with-coverage:
 	@$(GOTEST) \
@@ -203,6 +204,7 @@ test-with-coverage:
 		-coverprofile c.out \
 		-race \
 		-timeout $(TIMEOUT) \
+		$(GOTESTFLAGS) \
 		$(PACKAGES)
 .PHONY: test-with-coverage
 
@@ -218,12 +220,13 @@ test-integration:
 		-coverprofile integration.out \
 		-race \
 		-tags $(GOTAGS) \
+		$(GOTESTFLAGS) \
 		./...
 .PHONY: test-integration
 
 test-integration-quick: GOTAGS = integration
 test-integration-quick:
-	@$(GOTEST) -tags $(GOTAGS) ./...
+	@$(GOTEST) -tags $(GOTAGS) $(GOTESTFLAGS) ./...
 .PHONY: test-integration-quick
 
 test-integration-report: test-integration
@@ -378,6 +381,9 @@ refresh: deps-tidy update deps generate test build
 
 update: deps-update tools-update
 .PHONY: update
+
+verbose: make-verbose go-verbose
+.PHONY: verbose
 
 verify: deps-check generate test lint git-check
 .PHONY: verify
