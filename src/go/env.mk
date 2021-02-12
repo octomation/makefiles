@@ -1,3 +1,4 @@
+GOBIN       ?= $(PWD)/bin/$(OS)/$(ARCH)
 GOFLAGS     ?= -mod=
 GOPRIVATE   ?= go.octolab.net
 GOPROXY     ?= direct
@@ -26,6 +27,7 @@ ifeq (, $(PATHS))
 	PATHS = .
 endif
 
+export GOBIN       := $(GOBIN)
 export GOFLAGS     := $(GOFLAGS)
 export GOPRIVATE   := $(GOPRIVATE)
 export GOPROXY     := $(GOPROXY)
@@ -33,6 +35,7 @@ export GOTRACEBACK := $(GOTRACEBACK)
 
 go-env:
 	@echo "GO111MODULE: $(strip `go env GO111MODULE`)"
+	@echo "GOBIN:       $(strip `go env GOBIN`)"
 	@echo "GOFLAGS:     $(strip `go env GOFLAGS`)"
 	@echo "GOPRIVATE:   $(strip `go env GOPRIVATE`)"
 	@echo "GOPROXY:     $(strip `go env GOPROXY`)"
