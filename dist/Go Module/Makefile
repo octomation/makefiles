@@ -4,14 +4,12 @@
 GIT_HOOKS     = post-merge pre-commit pre-push
 GO_VERSIONS   = 1.11 1.12 1.13 1.14 1.15
 GO111MODULE   = on
-SHELL         = /bin/bash -euo pipefail
 
 AT    := @
 ARCH  := $(shell uname -m | tr '[:upper:]' '[:lower:]')
 OS    := $(shell uname -s | tr '[:upper:]' '[:lower:]')
 DATE  := $(shell date +%Y-%m-%dT%T%Z)
-
-SHELL ?= /bin/bash -euo pipefail
+SHELL := /usr/bin/env bash -euo pipefail -c
 
 make-verbose:
 	$(eval AT :=)

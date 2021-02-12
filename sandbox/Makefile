@@ -12,3 +12,11 @@ test:
 .PHONY: test
 
 # ---
+
+SHELL := /usr/bin/env bash -euo pipefail -c
+
+env:
+	@echo $(SHELL)
+.PHONY: env
+
+# ---
