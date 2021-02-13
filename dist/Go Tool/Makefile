@@ -143,16 +143,15 @@ deps-tidy:
 deps-update: selector = '{{if not (or .Main .Indirect)}}{{.Path}}{{end}}'
 deps-update:
 	$(AT) if command -v egg > /dev/null; then \
-		packages="`egg deps list | tr ' ' '\n' | sed -e 's/$$/@latest/'`"; \
+		packages="`egg deps list | tr ' ' '\n' | sed -e 's|$$|/...@latest|'`"; \
 	else \
-		packages="`go list -f $(selector) -m -mod=readonly all | sed -e 's/$$/@latest/'`"; \
+		packages="`go list -f $(selector) -m -mod=readonly all | sed -e 's|$$|/...@latest|'`"; \
 	fi; \
-	if [[ "$$packages" = "@latest" ]]; then exit; fi; \
-	for package in $$packages; do \
-		go mod edit -require $$package; \
-		go mod download; \
-	done
-	$(AT) $(MAKE) deps-tidy
+	if [[ "$$packages" = "/...@latest" ]]; then exit; fi; \
+	for package in $$packages; do go get -d $$package; done
+
+	$(AT) if [ -z "$(AT)" ]; then MAKE="$(MAKE) verbose"; else MAKE="$(MAKE)"; fi; \
+	$$MAKE deps-tidy
 .PHONY: deps-update
 
 GODOC_HOST ?= localhost:6060
@@ -305,15 +304,13 @@ tools-update: selector = '{{if not (or .Main .Indirect)}}{{.Path}}{{end}}'
 tools-update:
 	$(AT) cd tools; \
 	if command -v egg > /dev/null; then \
-		packages="`egg deps list | tr ' ' '\n' | sed -e 's/$$/@latest/'`"; \
+		packages="`egg deps list | tr ' ' '\n' | sed -e 's|$$|/...@latest|'`"; \
 	else \
-		packages="`go list -f $(selector) -m -mod=readonly all | sed -e 's/$$/@latest/'`"; \
+		packages="`go list -f $(selector) -m -mod=readonly all | sed -e 's|$$|/...@latest|'`"; \
 	fi; \
-	if [[ "$$packages" = "@latest" ]]; then exit; fi; \
-	for package in $$packages; do \
-		go mod edit -require $$package; \
-		go mod download; \
-	done
+	if [[ "$$packages" = "/...@latest" ]]; then exit; fi; \
+	for package in $$packages; do go get -d $$package; done
+
 	$(AT) if [ -z "$(AT)" ]; then MAKE="$(MAKE) verbose"; else MAKE="$(MAKE)"; fi; \
 	$$MAKE tools-tidy tools-install
 .PHONY: tools-update
