@@ -8,11 +8,12 @@ SHELL := /usr/bin/env bash -euo pipefail -c
 
 make-verbose:
 	$(eval AT :=)
+	$(eval MAKE := $(MAKE) verbose)
 	@echo > /dev/null
 .PHONY: make-verbose
 
 todo:
-	@grep \
+	$(AT) grep \
 		--exclude=Makefile \
 		--exclude-dir={bin,components,node_modules,vendor} \
 		--color \

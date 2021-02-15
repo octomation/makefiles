@@ -12,21 +12,21 @@ build-env:
 .PHONY: build-env
 
 build:
-	@go build -o $(BINARY) $(LDFLAGS) $(MAIN)
+	$(AT) go build -o $(BINARY) $(LDFLAGS) $(MAIN)
 .PHONY: build
 
 build-with-race:
-	@go build -race -o $(BINARY) $(LDFLAGS) $(MAIN)
+	$(AT) go build -race -o $(BINARY) $(LDFLAGS) $(MAIN)
 .PHONY: build-with-race
 
 build-clean:
-	@rm -f $(BINARY)
+	$(AT) rm -f $(BINARY)
 .PHONY: build-clean
 
 install:
-	@go install $(LDFLAGS) $(MAIN)
+	$(AT) go install $(LDFLAGS) $(MAIN)
 .PHONY: install
 
 install-clean:
-	@go clean -cache
+	$(AT) go clean -cache
 .PHONY: install-clean

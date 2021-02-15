@@ -2,7 +2,7 @@ ifdef GO_VERSIONS
 
 define go_tpl
 go$(1):
-	@docker run \
+	$$(AT) docker run \
 		--rm -it \
 		-v $(PWD):/src \
 		-w /src \

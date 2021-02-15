@@ -1,3 +1,3 @@
 brew:
-	@brew bundle
+	$(AT) brew bundle
 .PHONY: brew

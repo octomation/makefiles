@@ -37,7 +37,5 @@ tools-update:
 	fi; \
 	if [[ "$$packages" = "/...@latest" ]]; then exit; fi; \
 	for package in $$packages; do go get -d $$package; done
-
-	$(AT) if [ -z "$(AT)" ]; then MAKE="$(MAKE) verbose"; else MAKE="$(MAKE)"; fi; \
-	$$MAKE tools-tidy tools-install
+	$(AT) $(MAKE) tools-tidy tools-install
 .PHONY: tools-update

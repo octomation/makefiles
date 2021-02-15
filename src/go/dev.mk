@@ -1,12 +1,12 @@
 GODOC_HOST ?= localhost:6060
 
 go-docs:
-	@(sleep 2 && open http://$(GODOC_HOST)/pkg/$(LOCAL)/) &
-	@godoc -http=$(GODOC_HOST)
+	$(AT) (sleep 2 && open http://$(GODOC_HOST)/pkg/$(LOCAL)/) &
+	$(AT) godoc -http=$(GODOC_HOST)
 .PHONY: go-docs
 
 go-fmt:
-	@if command -v goimports > /dev/null; then \
+	$(AT) if command -v goimports > /dev/null; then \
 		goimports -local $(LOCAL) -ungroup -w $(PATHS); \
 	else \
 		gofmt -s -w $(PATHS); \
@@ -14,14 +14,14 @@ go-fmt:
 .PHONY: go-fmt
 
 go-generate:
-	@go generate $(PACKAGES)
+	$(AT) go generate $(PACKAGES)
 .PHONY: go-generate
 
 go-pkg:
-	@open https://pkg.go.dev/$(MODULE)@$(RELEASE)
+	$(AT) open https://pkg.go.dev/$(MODULE)@$(RELEASE)
 .PHONY: go-pkg
 
 lint:
-	@golangci-lint run ./...
-	@looppointer ./...
+	$(AT) golangci-lint run ./...
+	$(AT) looppointer ./...
 .PHONY: lint

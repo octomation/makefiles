@@ -4,6 +4,7 @@ AT := @
 
 verbose:
 	$(eval AT :=)
+	$(eval MAKE := $(MAKE) verbose)
 	@echo > /dev/null
 .PHONY: verbose
 
@@ -16,7 +17,9 @@ test:
 SHELL := /usr/bin/env bash -euo pipefail -c
 
 env:
-	@echo $(SHELL)
+	$(AT) echo $(SHELL)
+	$(AT) echo $(MAKE)
+	$(AT) $(MAKE) test
 .PHONY: env
 
 # ---

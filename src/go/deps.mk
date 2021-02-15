@@ -1,23 +1,23 @@
 deps-check:
-	@go mod verify
-	@if command -v egg > /dev/null; then \
+	$(AT) go mod verify
+	$(AT) if command -v egg > /dev/null; then \
 		egg deps check license; \
 		egg deps check version; \
 	fi
 .PHONY: deps-check
 
 deps-clean:
-	@go clean -modcache
+	$(AT) go clean -modcache
 .PHONY: deps-clean
 
 deps-fetch:
-	@go mod download
-	@if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi
+	$(AT) go mod download
+	$(AT) if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi
 .PHONY: deps-fetch
 
 deps-tidy:
-	@go mod tidy
-	@if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi
+	$(AT) go mod tidy
+	$(AT) if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi
 .PHONY: deps-tidy
 
 deps-update: selector = '{{if not (or .Main .Indirect)}}{{.Path}}{{end}}'
@@ -29,7 +29,5 @@ deps-update:
 	fi; \
 	if [[ "$$packages" = "/...@latest" ]]; then exit; fi; \
 	for package in $$packages; do go get -d $$package; done
-
-	$(AT) if [ -z "$(AT)" ]; then MAKE="$(MAKE) verbose"; else MAKE="$(MAKE)"; fi; \
-	$$MAKE deps-tidy
+	$(AT) $(MAKE) deps-tidy
 .PHONY: deps-update

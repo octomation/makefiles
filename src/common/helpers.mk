@@ -1,5 +1,5 @@
 todo:
-	@grep \
+	$(AT) grep \
 		--exclude=Makefile \
 		--exclude-dir={bin,components,node_modules,vendor} \
 		--color \

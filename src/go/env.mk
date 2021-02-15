@@ -17,7 +17,7 @@ endif
 ifeq (, $(GOTEST))
 	GOTEST = go test
 else
-	GOTEST := $(GOTEST) go --colored
+	GOTEST := $(GOTEST) go --colored --stacked
 endif
 
 ifeq (, $(PACKAGES))
