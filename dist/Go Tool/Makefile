@@ -333,7 +333,7 @@ endif
 export PATH := $(GOBIN):$(PATH)
 
 init: deps test lint hooks
-	@git config core.autocrlf input
+	$(AT) git config core.autocrlf input
 .PHONY: init
 
 clean: build-clean deps-clean install-clean test-clean
@@ -341,6 +341,9 @@ clean: build-clean deps-clean install-clean test-clean
 
 deps: deps-fetch tools-install
 .PHONY: deps
+
+docs: go-docs
+.PHONY: docs
 
 env: go-env build-env tools-env
 env:
