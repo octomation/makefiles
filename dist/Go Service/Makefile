@@ -292,6 +292,7 @@ tools-env:
 	@echo "TOOLFLAGS:   $(TOOLFLAGS)"
 .PHONY: tools-env
 
+ifneq (, $(wildcard ./tools/))
 tools-fetch: GOFLAGS = $(TOOLFLAGS)
 tools-fetch:
 	$(AT) cd tools; \
@@ -326,6 +327,27 @@ tools-update:
 	for package in $$packages; do go get -d $$package; done
 	$(AT) $(MAKE) tools-tidy tools-install
 .PHONY: tools-update
+else
+tools-disabled:
+	@echo have no tools
+.PHONY: tools-disabled
+
+tools-fetch: tools-disabled
+	@echo > /dev/null
+.PHONY: tools-fetch
+
+tools-tidy: tools-disabled
+	@echo > /dev/null
+.PHONY: tools-tidy
+
+tools-install: tools-disabled
+	@echo > /dev/null
+.PHONY: tools-install
+
+tools-update: tools-disabled
+	@echo > /dev/null
+.PHONY: tools-update
+endif
 
 ifdef GO_VERSIONS
 
