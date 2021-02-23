@@ -66,7 +66,7 @@ GOBIN       ?= $(PWD)/bin/$(OS)/$(ARCH)
 GOFLAGS     ?= -mod=
 GOPRIVATE   ?= go.octolab.net
 GOPROXY     ?= direct
-GOTEST      ?= $(GOBIN)/testit
+GOTEST      ?= $(shell PATH=$(PATH) command -v testit)
 GOTESTFLAGS ?=
 GOTRACEBACK ?= all
 LOCAL       ?= $(MODULE)
@@ -75,9 +75,6 @@ PACKAGES    ?= `go list $(GOFLAGS) ./...`
 PATHS       ?= $(shell echo $(PACKAGES) | sed -e "s|$(MODULE)/||g" | sed -e "s|$(MODULE)|$(PWD)/*.go|g")
 TIMEOUT     ?= 1s
 
-ifeq (, $(wildcard $(GOTEST)))
-	GOTEST = $(shell command -v testit)
-endif
 ifeq (, $(GOTEST))
 	GOTEST = go test
 else
@@ -278,11 +275,19 @@ client: build
 .PHONY: client
 
 dist-check:
-	$(AT) goreleaser --snapshot --skip-publish --rm-dist
+	$(AT) if command -v goreleaser > /dev/null; then \
+		goreleaser --snapshot --skip-publish --rm-dist; \
+	else \
+		echo have no goreleaser binary; \
+	fi
 .PHONY: dist-check
 
 dist-dump:
-	$(AT) godownloader .goreleaser.yml > bin/install
+	$(AT) if command -v godownloader > /dev/null; then \
+		godownloader .goreleaser.yml > bin/install; \
+	else \
+		echo have no godownloader binary; \
+	fi
 .PHONY: dist-dump
 
 TOOLFLAGS ?= -mod=

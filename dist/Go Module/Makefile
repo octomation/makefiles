@@ -66,7 +66,7 @@ GOBIN       ?= $(PWD)/bin/$(OS)/$(ARCH)
 GOFLAGS     ?= -mod=
 GOPRIVATE   ?= go.octolab.net
 GOPROXY     ?= direct
-GOTEST      ?= $(GOBIN)/testit
+GOTEST      ?= $(shell PATH=$(PATH) command -v testit)
 GOTESTFLAGS ?=
 GOTRACEBACK ?= all
 LOCAL       ?= $(MODULE)
@@ -75,9 +75,6 @@ PACKAGES    ?= `go list $(GOFLAGS) ./...`
 PATHS       ?= $(shell echo $(PACKAGES) | sed -e "s|$(MODULE)/||g" | sed -e "s|$(MODULE)|$(PWD)/*.go|g")
 TIMEOUT     ?= 1s
 
-ifeq (, $(wildcard $(GOTEST)))
-	GOTEST = $(shell command -v testit)
-endif
 ifeq (, $(GOTEST))
 	GOTEST = go test
 else
