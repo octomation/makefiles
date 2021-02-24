@@ -22,6 +22,15 @@ go-pkg:
 .PHONY: go-pkg
 
 lint:
-	$(AT) golangci-lint run ./...
-	$(AT) looppointer ./...
+	$(AT) if command -v golangci-lint > /dev/null; then \
+		golangci-lint run ./...; \
+	else \
+		echo have no golangci-lint binary; \
+	fi
+
+	$(AT) if command -v looppointer > /dev/null; then \
+		looppointer ./...; \
+	else \
+		echo have no looppointer binary; \
+	fi
 .PHONY: lint

@@ -174,8 +174,17 @@ go-pkg:
 .PHONY: go-pkg
 
 lint:
-	$(AT) golangci-lint run ./...
-	$(AT) looppointer ./...
+	$(AT) if command -v golangci-lint > /dev/null; then \
+		golangci-lint run ./...; \
+	else \
+		echo have no golangci-lint binary; \
+	fi
+
+	$(AT) if command -v looppointer > /dev/null; then \
+		looppointer ./...; \
+	else \
+		echo have no looppointer binary; \
+	fi
 .PHONY: lint
 
 test:
@@ -259,17 +268,17 @@ install-clean:
 	$(AT) go clean -cache
 .PHONY: install-clean
 
-server: BINARY = $(BINPATH)/server
+server: BINARY = $(GOBIN)/server
 server: MAIN   = ./cmd/server/main.go
 server: build
 .PHONY: server
 
-server-with-race: BINARY = $(BINPATH)/server-race
+server-with-race: BINARY = $(GOBIN)/server-race
 server-with-race: MAIN   = ./cmd/server/main.go
 server-with-race: build-with-race
 .PHONY: server-with-race
 
-client: BINARY = $(BINPATH)/client
+client: BINARY = $(GOBIN)/client
 client: MAIN   = ./cmd/client/main.go
 client: build
 .PHONY: client
