@@ -1,3 +1,4 @@
+ifneq (, $(shell PATH=$(PATH) command -v docker))
 ifdef GO_VERSIONS
 
 define go_tpl
@@ -13,4 +14,5 @@ endef
 render_go_tpl = $(eval $(call go_tpl,$(version)))
 $(foreach version,$(GO_VERSIONS),$(render_go_tpl))
 
+endif
 endif

@@ -26,15 +26,10 @@ todo:
 		-nRo -E ' TODO:.*|SkipNow' . || true
 .PHONY: todo
 
-rmdir:
-	$(AT) for dir in `git ls-files --others --exclude-standard --directory`; do \
-		find $${dir%%/} -depth -type d -empty | xargs rmdir; \
-	done
-.PHONY: rmdir
-
 COMMIT  := $(shell git rev-parse --verify HEAD)
 RELEASE := $(shell git describe --tags 2>/dev/null | rev | cut -d - -f3- | rev)
 
+ifneq (, $(wildcard ./githooks/))
 ifdef GIT_HOOKS
 
 hooks: unhook
@@ -55,12 +50,26 @@ render_hook_tpl = $(eval $(call hook_tpl,$(hook)))
 $(foreach hook,$(GIT_HOOKS),$(render_hook_tpl))
 
 endif
+else
+hooks:
+	@echo have no git hooks
+.PHONY: hooks
+
+unhook: ;
+.PHONY: unhook
+endif
 
 git-check:
 	$(AT) git diff --exit-code >/dev/null
 	$(AT) git diff --cached --exit-code >/dev/null
 	$(AT) ! git ls-files --others --exclude-standard | grep -q ^
 .PHONY: git-check
+
+git-rmdir:
+	$(AT) for dir in `git ls-files --others --exclude-standard --directory`; do \
+		find $${dir%%/} -depth -type d -empty | xargs rmdir; \
+	done
+.PHONY: git-rmdir
 
 GOBIN       ?= $(PWD)/bin/$(OS)/$(ARCH)
 GOFLAGS     ?= -mod=
@@ -363,6 +372,7 @@ tools-update: tools-disabled
 .PHONY: tools-update
 endif
 
+ifneq (, $(shell PATH=$(PATH) command -v docker))
 ifdef GO_VERSIONS
 
 define go_tpl
@@ -378,6 +388,7 @@ endef
 render_go_tpl = $(eval $(call go_tpl,$(version)))
 $(foreach version,$(GO_VERSIONS),$(render_go_tpl))
 
+endif
 endif
 
 

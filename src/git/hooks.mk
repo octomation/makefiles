@@ -1,3 +1,4 @@
+ifneq (, $(wildcard ./githooks/))
 ifdef GIT_HOOKS
 
 hooks: unhook
@@ -17,4 +18,12 @@ endef
 render_hook_tpl = $(eval $(call hook_tpl,$(hook)))
 $(foreach hook,$(GIT_HOOKS),$(render_hook_tpl))
 
+endif
+else
+hooks:
+	@echo have no git hooks
+.PHONY: hooks
+
+unhook: ;
+.PHONY: unhook
 endif
