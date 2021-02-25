@@ -20,6 +20,3 @@ todo:
 		--text \
 		-nRo -E ' TODO:.*|SkipNow' . || true
 .PHONY: todo
-
-
-
