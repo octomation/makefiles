@@ -9,7 +9,7 @@ SHELL := /usr/bin/env bash -euo pipefail -c
 make-verbose:
 	$(eval AT :=)
 	$(eval MAKE := $(MAKE) verbose)
-	@echo > /dev/null
+	@echo >/dev/null
 .PHONY: make-verbose
 
 todo:
@@ -20,3 +20,4 @@ todo:
 		--text \
 		-nRo -E ' TODO:.*|SkipNow' . || true
 .PHONY: todo
+

@@ -31,7 +31,7 @@ tools-update: GOFLAGS = $(TOOLFLAGS)
 tools-update: selector = '{{if not (or .Main .Indirect)}}{{.Path}}{{end}}'
 tools-update:
 	$(AT) cd tools; \
-	if command -v egg > /dev/null; then \
+	if command -v egg >/dev/null; then \
 		packages="`egg deps list | tr ' ' '\n' | sed -e 's|$$|/...@latest|'`"; \
 	else \
 		packages="`go list -f $(selector) -m -mod=readonly all | sed -e 's|$$|/...@latest|'`"; \
@@ -46,18 +46,18 @@ tools-disabled:
 .PHONY: tools-disabled
 
 tools-fetch: tools-disabled
-	@echo > /dev/null
+	@echo >/dev/null
 .PHONY: tools-fetch
 
 tools-tidy: tools-disabled
-	@echo > /dev/null
+	@echo >/dev/null
 .PHONY: tools-tidy
 
 tools-install: tools-disabled
-	@echo > /dev/null
+	@echo >/dev/null
 .PHONY: tools-install
 
 tools-update: tools-disabled
-	@echo > /dev/null
+	@echo >/dev/null
 .PHONY: tools-update
 endif

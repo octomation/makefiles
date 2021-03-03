@@ -1,6 +1,6 @@
 deps-check:
 	$(AT) go mod verify
-	$(AT) if command -v egg > /dev/null; then \
+	$(AT) if command -v egg >/dev/null; then \
 		egg deps check license; \
 		egg deps check version; \
 	fi
@@ -22,7 +22,7 @@ deps-tidy:
 
 deps-update: selector = '{{if not (or .Main .Indirect)}}{{.Path}}{{end}}'
 deps-update:
-	$(AT) if command -v egg > /dev/null; then \
+	$(AT) if command -v egg >/dev/null; then \
 		packages="`egg deps list | tr ' ' '\n' | sed -e 's|$$|/...@latest|'`"; \
 	else \
 		packages="`go list -f $(selector) -m -mod=readonly all | sed -e 's|$$|/...@latest|'`"; \
