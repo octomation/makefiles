@@ -27,10 +27,4 @@ lint:
 	else \
 		echo have no golangci-lint binary; \
 	fi
-
-	$(AT) if command -v looppointer >/dev/null; then \
-		looppointer ./...; \
-	else \
-		echo have no looppointer binary; \
-	fi
 .PHONY: lint
