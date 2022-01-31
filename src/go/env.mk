@@ -48,6 +48,5 @@ go-env:
 .PHONY: go-env
 
 go-verbose:
-	$(eval GOTESTFLAGS := -v)
-	@echo >/dev/null
+	$(eval GOTESTFLAGS := -v) @true
 .PHONY: go-verbose

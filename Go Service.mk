@@ -3,7 +3,6 @@
 .DEFAULT_GOAL = check
 GIT_HOOKS     = post-merge pre-commit pre-push
 GO_VERSIONS   = 1.18 1.19
-MAIN          = ./cmd/server
 
 include src/common/env.mk
 include src/common/helpers.mk

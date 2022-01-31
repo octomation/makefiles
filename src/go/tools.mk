@@ -49,18 +49,18 @@ tools-disabled:
 .PHONY: tools-disabled
 
 tools-fetch: tools-disabled
-	@echo >/dev/null
+	@true
 .PHONY: tools-fetch
 
 tools-tidy: tools-disabled
-	@echo >/dev/null
+	@true
 .PHONY: tools-tidy
 
 tools-install: tools-disabled
-	@echo >/dev/null
+	@true
 .PHONY: tools-install
 
 tools-update: tools-disabled
-	@echo >/dev/null
+	@true
 .PHONY: tools-update
 endif

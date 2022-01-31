@@ -3,7 +3,6 @@
 .DEFAULT_GOAL = check
 GIT_HOOKS     = post-merge pre-commit pre-push
 GO_VERSIONS   = 1.18 1.19
-MAIN          = ./cmd/server
 
 AT    := @
 ARCH  := $(shell uname -m | tr '[:upper:]' '[:lower:]')
@@ -124,8 +123,7 @@ go-env:
 .PHONY: go-env
 
 go-verbose:
-	$(eval GOTESTFLAGS := -v)
-	@echo >/dev/null
+	$(eval GOTESTFLAGS := -v) @true
 .PHONY: go-verbose
 
 deps-check:
@@ -266,15 +264,17 @@ install-clean:
 	$(AT) go clean -cache
 .PHONY: install-clean
 
-server: BINARY = $(GOBIN)/server
-server: MAIN   = ./cmd/server/main.go
-server: ;
-.PHONY: server
-
-client: BINARY = $(GOBIN)/client
-client: MAIN   = ./cmd/client/main.go
-client: ;
+client:
+	$(eval BINARY := $(GOBIN)/client)
+	$(eval MAIN := ./cmd/client/main.go)
+	@true
 .PHONY: client
+
+server:
+	$(eval BINARY := $(GOBIN)/server)
+	$(eval MAIN := ./cmd/server/main.go)
+	@true
+.PHONY: server
 
 dist-check:
 	$(AT) goreleaser --snapshot --skip-publish --rm-dist
@@ -335,19 +335,19 @@ tools-disabled:
 .PHONY: tools-disabled
 
 tools-fetch: tools-disabled
-	@echo >/dev/null
+	@true
 .PHONY: tools-fetch
 
 tools-tidy: tools-disabled
-	@echo >/dev/null
+	@true
 .PHONY: tools-tidy
 
 tools-install: tools-disabled
-	@echo >/dev/null
+	@true
 .PHONY: tools-install
 
 tools-update: tools-disabled
-	@echo >/dev/null
+	@true
 .PHONY: tools-update
 endif
 
