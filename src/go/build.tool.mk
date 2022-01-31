@@ -19,10 +19,6 @@ build-with-race:
 	$(AT) go build -race -o $(BINARY) $(LDFLAGS) $(MAIN)
 .PHONY: build-with-race
 
-build-clean:
-	$(AT) rm -f $(BINARY)
-.PHONY: build-clean
-
 install:
 	$(AT) go install $(LDFLAGS) $(MAIN)
 .PHONY: install

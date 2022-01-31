@@ -14,7 +14,7 @@ include src/go/deps.mk
 include src/go/dev.mk
 include src/go/test.unit.mk
 include src/go/test.integration.mk
-include src/go/build.mk
+include src/go/build.tool.mk
 include src/go/dist.mk
 include src/go/tools.mk
 include src/docker/go.mk
@@ -28,7 +28,7 @@ init: deps check hooks
 check: test lint
 .PHONY: check
 
-clean: build-clean deps-clean install-clean test-clean
+clean: deps-clean install-clean test-clean
 .PHONY: clean
 
 deps: deps-fetch tools-install

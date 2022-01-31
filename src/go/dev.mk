@@ -6,11 +6,7 @@ go-docs:
 .PHONY: go-docs
 
 go-fmt:
-	$(AT) if command -v goimports >/dev/null; then \
-		goimports -local $(LOCAL) -ungroup -w $(PATHS); \
-	else \
-		gofmt -s -w $(PATHS); \
-	fi
+	$(AT) goimports -local $(LOCAL) -w $(PATHS)
 .PHONY: go-fmt
 
 go-generate:
@@ -22,9 +18,5 @@ go-pkg:
 .PHONY: go-pkg
 
 lint:
-	$(AT) if command -v golangci-lint >/dev/null; then \
-		golangci-lint run --enable looppointer ./...; \
-	else \
-		echo have no golangci-lint binary; \
-	fi
+	$(AT) golangci-lint run --enable looppointer ./...
 .PHONY: lint

@@ -1,4 +1,4 @@
-ifneq (, $(shell PATH=$(PATH) command -v docker))
+ifneq (, $(shell PATH="$(PATH)" command -v docker))
 ifdef GO_VERSIONS
 
 define go_tpl

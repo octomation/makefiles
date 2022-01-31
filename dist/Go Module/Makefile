@@ -78,7 +78,7 @@ GOBIN       ?= $(PWD)/bin/$(OS)/$(ARCH)
 GOFLAGS     ?= -mod=
 GOPRIVATE   ?= go.octolab.net
 GOPROXY     ?= direct
-GOTEST      ?= $(shell PATH=$(PATH) command -v testit)
+GOTEST      ?= $(shell PATH="$(PATH)" command -v testit)
 GOTESTFLAGS ?=
 GOTRACEBACK ?= all
 LOCAL       ?= $(MODULE)
@@ -173,11 +173,7 @@ go-docs:
 .PHONY: go-docs
 
 go-fmt:
-	$(AT) if command -v goimports >/dev/null; then \
-		goimports -local $(LOCAL) -ungroup -w $(PATHS); \
-	else \
-		gofmt -s -w $(PATHS); \
-	fi
+	$(AT) goimports -local $(LOCAL) -w $(PATHS)
 .PHONY: go-fmt
 
 go-generate:
@@ -189,11 +185,7 @@ go-pkg:
 .PHONY: go-pkg
 
 lint:
-	$(AT) if command -v golangci-lint >/dev/null; then \
-		golangci-lint run --enable looppointer ./...; \
-	else \
-		echo have no golangci-lint binary; \
-	fi
+	$(AT) golangci-lint run --enable looppointer ./...
 .PHONY: lint
 
 test:
@@ -311,7 +303,7 @@ tools-update: tools-disabled
 .PHONY: tools-update
 endif
 
-ifneq (, $(shell PATH=$(PATH) command -v docker))
+ifneq (, $(shell PATH="$(PATH)" command -v docker))
 ifdef GO_VERSIONS
 
 define go_tpl
