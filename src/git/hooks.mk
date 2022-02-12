@@ -1,23 +1,23 @@
 ifneq (, $(wildcard bin/lib/git/hooks/))
 ifdef GIT_HOOKS
 
-hooks: unhook
+git-hooks: git-unhook
 	$(AT) for hook in $(GIT_HOOKS); do \
 		cp bin/lib/git/hooks/$$hook .git/hooks/; \
 	done
-.PHONY: hooks
+.PHONY: git-hooks
 
-unhook:
+git-unhook:
 	$(AT) ls .git/hooks \
 	| grep -v .sample \
 	| sed 's|.*|.git/hooks/&|' \
 	| xargs rm -f || true
-.PHONY: unhook
+.PHONY: git-unhook
 
 define hook_tpl
-$(1):
+git-$(1):
 	$$(AT) bin/lib/git/hooks/$(1)
-.PHONY: $(1)
+.PHONY: git-$(1)
 endef
 
 render_hook_tpl = $(eval $(call hook_tpl,$(hook)))
@@ -25,10 +25,10 @@ $(foreach hook,$(GIT_HOOKS),$(render_hook_tpl))
 
 endif
 else
-hooks:
+git-hooks:
 	@echo have no git hooks
-.PHONY: hooks
+.PHONY: git-hooks
 
-unhook: ;
-.PHONY: unhook
+git-unhook: ;
+.PHONY: git-unhook
 endif

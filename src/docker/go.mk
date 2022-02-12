@@ -2,13 +2,13 @@ ifneq (, $(shell PATH="$(PATH)" command -v docker))
 ifdef GO_VERSIONS
 
 define go_tpl
-go$(1):
+go-$(1):
 	$$(AT) docker run \
 		--rm -it \
 		-v $(PWD):/src \
 		-w /src \
 		golang:$(1) bash
-.PHONY: go$(1)
+.PHONY: go-$(1)
 endef
 
 render_go_tpl = $(eval $(call go_tpl,$(version)))
