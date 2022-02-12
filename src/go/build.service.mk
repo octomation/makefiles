@@ -1,4 +1,5 @@
-include src/go/build.tool.mk # TODO:refactor support relative path
+# TODO:refactor support relative path
+include src/go/build.tool.mk
 
 go-client:
 	$(eval MAIN := ./cmd/client)

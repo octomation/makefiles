@@ -2,7 +2,7 @@
 
 .DEFAULT_GOAL = check
 GIT_HOOKS     = post-merge pre-commit pre-push
-GO_VERSIONS   = 1.18 1.19
+GO_VERSIONS   = 1.19 1.20
 
 AT    := @
 ARCH  := $(shell uname -m | tr '[:upper:]' '[:lower:]')
@@ -14,14 +14,14 @@ make-verbose:
 	$(eval AT :=) $(eval MAKE := $(MAKE) verbose) @true
 .PHONY: make-verbose
 
-todo:
+find-todo:
 	$(AT) grep \
 		--exclude=Makefile \
 		--exclude-dir={bin,components,node_modules,vendor} \
 		--color \
 		--text \
 		-inRo -E ' TODO:.*|SkipNow' . || true
-.PHONY: todo
+.PHONY: find-todo
 
 COMMIT  := $(shell git rev-parse --verify HEAD)
 RELEASE := $(shell git describe --tags 2>/dev/null | rev | cut -d - -f3- | rev)
@@ -29,23 +29,23 @@ RELEASE := $(shell git describe --tags 2>/dev/null | rev | cut -d - -f3- | rev)
 ifneq (, $(wildcard bin/lib/git/hooks/))
 ifdef GIT_HOOKS
 
-hooks: unhook
+git-hooks: git-unhook
 	$(AT) for hook in $(GIT_HOOKS); do \
 		cp bin/lib/git/hooks/$$hook .git/hooks/; \
 	done
-.PHONY: hooks
+.PHONY: git-hooks
 
-unhook:
+git-unhook:
 	$(AT) ls .git/hooks \
 	| grep -v .sample \
 	| sed 's|.*|.git/hooks/&|' \
 	| xargs rm -f || true
-.PHONY: unhook
+.PHONY: git-unhook
 
 define hook_tpl
-$(1):
+git-$(1):
 	$$(AT) bin/lib/git/hooks/$(1)
-.PHONY: $(1)
+.PHONY: git-$(1)
 endef
 
 render_hook_tpl = $(eval $(call hook_tpl,$(hook)))
@@ -53,12 +53,12 @@ $(foreach hook,$(GIT_HOOKS),$(render_hook_tpl))
 
 endif
 else
-hooks:
+git-hooks:
 	@echo have no git hooks
-.PHONY: hooks
+.PHONY: git-hooks
 
-unhook: ;
-.PHONY: unhook
+git-unhook: ;
+.PHONY: git-unhook
 endif
 
 git-check:
@@ -126,30 +126,30 @@ go-verbose:
 	$(eval GOTESTFLAGS := -v) @true
 .PHONY: go-verbose
 
-deps-check:
+go-deps-check:
 	$(AT) go mod verify
 	$(AT) if command -v egg >/dev/null; then \
 		egg deps check license; \
 		egg deps check version; \
 	fi
-.PHONY: deps-check
+.PHONY: go-deps-check
 
-deps-clean:
+go-deps-clean:
 	$(AT) go clean -modcache
-.PHONY: deps-clean
+.PHONY: go-deps-clean
 
-deps-fetch:
+go-deps-fetch:
 	$(AT) go mod download
 	$(AT) if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi
-.PHONY: deps-fetch
+.PHONY: go-deps-fetch
 
-deps-tidy:
+go-deps-tidy:
 	$(AT) go mod tidy
 	$(AT) if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi
-.PHONY: deps-tidy
+.PHONY: go-deps-tidy
 
-deps-update: selector = '{{if not (or .Main .Indirect)}}{{.Path}}{{end}}'
-deps-update:
+go-deps-update: selector = '{{if not (or .Main .Indirect)}}{{.Path}}{{end}}'
+go-deps-update:
 	$(AT) if command -v egg >/dev/null; then \
 		packages="`egg deps list | tr ' ' '\n'`"; \
 	else \
@@ -161,12 +161,12 @@ deps-update:
 		go mod tidy; \
 	done
 	$(AT) $(MAKE) deps-tidy
-.PHONY: deps-update
+.PHONY: go-deps-update
 
-GODOC_HOST ?= localhost:6060
+GODOC_HOST ?= http://localhost:6060
 
 go-docs:
-	$(AT) (sleep 2 && open http://$(GODOC_HOST)/pkg/$(LOCAL)/) &
+	$(AT) (sleep 2 && open $(GODOC_HOST)/pkg/$(LOCAL)/) &
 	$(AT) godoc -http=$(GODOC_HOST)
 .PHONY: go-docs
 
@@ -182,23 +182,23 @@ go-pkg:
 	$(AT) open https://pkg.go.dev/$(MODULE)@$(RELEASE)
 .PHONY: go-pkg
 
-lint:
+go-lint:
 	$(AT) golangci-lint run --enable looppointer ./...
-.PHONY: lint
+.PHONY: go-lint
 
-test:
+go-test:
 	$(AT) $(GOTEST) -race -timeout $(TIMEOUT) $(GOTESTFLAGS) $(PACKAGES)
-.PHONY: test
+.PHONY: go-test
 
-test-clean:
+go-test-clean:
 	$(AT) go clean -testcache
-.PHONY: test-clean
+.PHONY: go-test-clean
 
-test-quick:
+go-test-quick:
 	$(AT) $(GOTEST) -timeout $(TIMEOUT) $(GOTESTFLAGS) $(PACKAGES)
-.PHONY: test-quick
+.PHONY: go-test-quick
 
-test-with-coverage:
+go-test-with-coverage:
 	$(AT) $(GOTEST) \
 		-cover \
 		-covermode atomic \
@@ -207,14 +207,14 @@ test-with-coverage:
 		-timeout $(TIMEOUT) \
 		$(GOTESTFLAGS) \
 		$(PACKAGES)
-.PHONY: test-with-coverage
+.PHONY: go-test-with-coverage
 
-test-with-coverage-report: test-with-coverage
+go-test-with-coverage-report: go-test-with-coverage
 	$(AT) go tool cover -html c.out
-.PHONY: test-with-coverage-report
+.PHONY: go-test-with-coverage-report
 
-test-integration: GOTAGS = $(GOTAGS) integration
-test-integration:
+go-test-integration: GOTAGS = $(GOTAGS) integration
+go-test-integration:
 	$(AT) $(GOTEST) \
 		-cover \
 		-covermode atomic \
@@ -223,99 +223,103 @@ test-integration:
 		-tags $(GOTAGS) \
 		$(GOTESTFLAGS) \
 		$(PACKAGES)
-.PHONY: test-integration
+.PHONY: go-test-integration
 
-test-integration-quick: GOTAGS = $(GOTAGS) integration
-test-integration-quick:
+go-test-integration-quick: GOTAGS = $(GOTAGS) integration
+go-test-integration-quick:
 	$(AT) $(GOTEST) -tags $(GOTAGS) $(GOTESTFLAGS) $(PACKAGES)
-.PHONY: test-integration-quick
+.PHONY: go-test-integration-quick
 
-test-integration-report: test-integration
+go-test-integration-report: go-test-integration
 	$(AT) go tool cover -html integration.out
-.PHONY: test-integration-report
+.PHONY: go-test-integration-report
 
 # TODO:refactor support relative path
 BINARY  ?= $(GOBIN)/$(shell basename $(MAIN))
-LDFLAGS ?= -ldflags "-s -w -X main.commit=$(COMMIT) -X main.date=$(DATE)"
+LDFLAGS ?= -ldflags "-s -w -X main.version=$(RELEASE) -X main.commit=$(COMMIT) -X main.date=$(DATE)"
 MAIN    ?= $(MODULE)
 
-build-env:
+go-build-env:
 	@echo "DATE:        $(DATE)"
 	@echo "COMMIT:      $(COMMIT)"
 	@echo "RELEASE:     $(RELEASE)"
 	@echo "BINARY:      $(BINARY)"
 	@echo "LDFLAGS:     $(LDFLAGS)"
 	@echo "MAIN:        $(MAIN)"
-.PHONY: build-env
+.PHONY: go-build-env
 
-build:
+go-build:
 	$(AT) go build -o $(BINARY) $(LDFLAGS) $(MAIN)
-.PHONY: build
+.PHONY: go-build
 
-build-with-race:
+go-build-with-race:
 	$(AT) go build -race -o $(BINARY) $(LDFLAGS) $(MAIN)
-.PHONY: build-with-race
+.PHONY: go-build-with-race
 
-install:
+go-install:
 	$(AT) go install $(LDFLAGS) $(MAIN)
-.PHONY: install
+.PHONY: go-install
 
-install-clean:
+go-install-clean:
 	$(AT) go clean -cache
-.PHONY: install-clean
+.PHONY: go-install-clean
 
-client:
-	$(eval BINARY := $(GOBIN)/client)
-	$(eval MAIN := ./cmd/client/main.go)
+go-client:
+	$(eval MAIN := ./cmd/client)
 	@true
-.PHONY: client
+.PHONY: go-client
 
-server:
-	$(eval BINARY := $(GOBIN)/server)
-	$(eval MAIN := ./cmd/server/main.go)
+go-server:
+	$(eval MAIN := ./cmd/server)
 	@true
-.PHONY: server
+.PHONY: go-server
 
-dist-check:
+go-dist-check:
 	$(AT) goreleaser --snapshot --skip-publish --rm-dist
-.PHONY: dist-check
+.PHONY: go-dist-check
 
-dist-installer:
+go-dist-installer:
 	$(AT) godownloader .goreleaser.yml >bin/install
-.PHONY: dist-installer
+.PHONY: go-dist-installer
 
 TOOLFLAGS ?= -mod=
 
-tools-env:
+go-tools-env:
 	@echo "GOBIN:       `go env GOBIN`"
 	@echo "TOOLFLAGS:   $(TOOLFLAGS)"
-.PHONY: tools-env
+.PHONY: go-tools-env
 
 ifneq (, $(wildcard ./tools/))
-tools-fetch: GOFLAGS = $(TOOLFLAGS)
-tools-fetch:
-	$(AT) cd tools; \
-	go mod download; \
+go-tools-fetch: GOFLAGS = $(TOOLFLAGS)
+go-tools-fetch:
+	$(AT) cd tools; go mod download; \
 	if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi
-.PHONY: tools-fetch
+.PHONY: go-tools-fetch
 
-tools-tidy: GOFLAGS = $(TOOLFLAGS)
-tools-tidy:
-	$(AT) cd tools; \
-	go mod tidy; \
+go-tools-tidy: GOFLAGS = $(TOOLFLAGS)
+go-tools-tidy:
+	$(AT) cd tools; go mod tidy; \
 	if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi
-.PHONY: tools-tidy
+.PHONY: go-tools-tidy
 
-tools-install: GOFLAGS = $(TOOLFLAGS)
-tools-install: GOTAGS = tools
-tools-install: tools-fetch
-	$(AT) cd tools; \
-	go generate -tags $(GOTAGS) tools.go
-.PHONY: tools-install
+go-tools-check: GOFLAGS = $(TOOLFLAGS)
+go-tools-check:
+	$(AT) cd tools; go mod verify; \
+	if command -v egg >/dev/null; then \
+		egg deps check license; \
+		egg deps check version; \
+	fi
+.PHONY: go-tools-check
 
-tools-update: GOFLAGS = $(TOOLFLAGS)
-tools-update: selector = '{{if not (or .Main .Indirect)}}{{.Path}}{{end}}'
-tools-update:
+go-tools-install: GOFLAGS = $(TOOLFLAGS)
+go-tools-install: GOTAGS = tools
+go-tools-install: go-tools-fetch
+	$(AT) cd tools; go generate -tags $(GOTAGS) tools.go
+.PHONY: go-tools-install
+
+go-tools-update: GOFLAGS = $(TOOLFLAGS)
+go-tools-update: selector = '{{if not (or .Main .Indirect)}}{{.Path}}{{end}}'
+go-tools-update:
 	$(AT) cd tools; \
 	if command -v egg >/dev/null; then \
 		packages="`egg deps list | tr ' ' '\n'`"; \
@@ -328,40 +332,40 @@ tools-update:
 		go mod tidy; \
 	done
 	$(AT) $(MAKE) tools-tidy tools-install
-.PHONY: tools-update
+.PHONY: go-tools-update
 else
-tools-disabled:
+go-tools-disabled:
 	@echo have no tools
-.PHONY: tools-disabled
+.PHONY: go-tools-disabled
 
-tools-fetch: tools-disabled
+go-tools-fetch: go-tools-disabled
 	@true
-.PHONY: tools-fetch
+.PHONY: go-tools-fetch
 
-tools-tidy: tools-disabled
+go-tools-tidy: go-tools-disabled
 	@true
-.PHONY: tools-tidy
+.PHONY: go-tools-tidy
 
-tools-install: tools-disabled
+go-tools-install: go-tools-disabled
 	@true
-.PHONY: tools-install
+.PHONY: go-tools-install
 
-tools-update: tools-disabled
+go-tools-update: go-tools-disabled
 	@true
-.PHONY: tools-update
+.PHONY: go-tools-update
 endif
 
 ifneq (, $(shell PATH="$(PATH)" command -v docker))
 ifdef GO_VERSIONS
 
 define go_tpl
-go$(1):
+go-$(1):
 	$$(AT) docker run \
 		--rm -it \
 		-v $(PWD):/src \
 		-w /src \
 		golang:$(1) bash
-.PHONY: go$(1)
+.PHONY: go-$(1)
 endef
 
 render_go_tpl = $(eval $(call go_tpl,$(version)))
