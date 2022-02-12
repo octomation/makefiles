@@ -1,7 +1,7 @@
-dist-check:
+go-dist-check:
 	$(AT) goreleaser --snapshot --skip-publish --rm-dist
-.PHONY: dist-check
+.PHONY: go-dist-check
 
-dist-installer:
+go-dist-installer:
 	$(AT) godownloader .goreleaser.yml >bin/install
-.PHONY: dist-installer
+.PHONY: go-dist-installer

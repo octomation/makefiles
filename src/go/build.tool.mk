@@ -1,28 +1,28 @@
 BINARY  ?= $(GOBIN)/$(shell basename $(MAIN))
-LDFLAGS ?= -ldflags "-s -w -X main.commit=$(COMMIT) -X main.date=$(DATE)"
+LDFLAGS ?= -ldflags "-s -w -X main.version=$(RELEASE) -X main.commit=$(COMMIT) -X main.date=$(DATE)"
 MAIN    ?= $(MODULE)
 
-build-env:
+go-build-env:
 	@echo "DATE:        $(DATE)"
 	@echo "COMMIT:      $(COMMIT)"
 	@echo "RELEASE:     $(RELEASE)"
 	@echo "BINARY:      $(BINARY)"
 	@echo "LDFLAGS:     $(LDFLAGS)"
 	@echo "MAIN:        $(MAIN)"
-.PHONY: build-env
+.PHONY: go-build-env
 
-build:
+go-build:
 	$(AT) go build -o $(BINARY) $(LDFLAGS) $(MAIN)
-.PHONY: build
+.PHONY: go-build
 
-build-with-race:
+go-build-with-race:
 	$(AT) go build -race -o $(BINARY) $(LDFLAGS) $(MAIN)
-.PHONY: build-with-race
+.PHONY: go-build-with-race
 
-install:
+go-install:
 	$(AT) go install $(LDFLAGS) $(MAIN)
-.PHONY: install
+.PHONY: go-install
 
-install-clean:
+go-install-clean:
 	$(AT) go clean -cache
-.PHONY: install-clean
+.PHONY: go-install-clean

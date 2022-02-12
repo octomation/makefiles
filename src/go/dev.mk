@@ -1,7 +1,7 @@
-GODOC_HOST ?= localhost:6060
+GODOC_HOST ?= http://localhost:6060
 
 go-docs:
-	$(AT) (sleep 2 && open http://$(GODOC_HOST)/pkg/$(LOCAL)/) &
+	$(AT) (sleep 2 && open $(GODOC_HOST)/pkg/$(LOCAL)/) &
 	$(AT) godoc -http=$(GODOC_HOST)
 .PHONY: go-docs
 
@@ -17,6 +17,6 @@ go-pkg:
 	$(AT) open https://pkg.go.dev/$(MODULE)@$(RELEASE)
 .PHONY: go-pkg
 
-lint:
+go-lint:
 	$(AT) golangci-lint run --enable looppointer ./...
-.PHONY: lint
+.PHONY: go-lint

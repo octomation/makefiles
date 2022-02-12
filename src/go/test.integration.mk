@@ -1,5 +1,5 @@
-test-integration: GOTAGS = $(GOTAGS) integration
-test-integration:
+go-test-integration: GOTAGS = $(GOTAGS) integration
+go-test-integration:
 	$(AT) $(GOTEST) \
 		-cover \
 		-covermode atomic \
@@ -8,13 +8,13 @@ test-integration:
 		-tags $(GOTAGS) \
 		$(GOTESTFLAGS) \
 		$(PACKAGES)
-.PHONY: test-integration
+.PHONY: go-test-integration
 
-test-integration-quick: GOTAGS = $(GOTAGS) integration
-test-integration-quick:
+go-test-integration-quick: GOTAGS = $(GOTAGS) integration
+go-test-integration-quick:
 	$(AT) $(GOTEST) -tags $(GOTAGS) $(GOTESTFLAGS) $(PACKAGES)
-.PHONY: test-integration-quick
+.PHONY: go-test-integration-quick
 
-test-integration-report: test-integration
+go-test-integration-report: go-test-integration
 	$(AT) go tool cover -html integration.out
-.PHONY: test-integration-report
+.PHONY: go-test-integration-report

@@ -1,27 +1,27 @@
-deps-check:
+go-deps-check:
 	$(AT) go mod verify
 	$(AT) if command -v egg >/dev/null; then \
 		egg deps check license; \
 		egg deps check version; \
 	fi
-.PHONY: deps-check
+.PHONY: go-deps-check
 
-deps-clean:
+go-deps-clean:
 	$(AT) go clean -modcache
-.PHONY: deps-clean
+.PHONY: go-deps-clean
 
-deps-fetch:
+go-deps-fetch:
 	$(AT) go mod download
 	$(AT) if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi
-.PHONY: deps-fetch
+.PHONY: go-deps-fetch
 
-deps-tidy:
+go-deps-tidy:
 	$(AT) go mod tidy
 	$(AT) if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi
-.PHONY: deps-tidy
+.PHONY: go-deps-tidy
 
-deps-update: selector = '{{if not (or .Main .Indirect)}}{{.Path}}{{end}}'
-deps-update:
+go-deps-update: selector = '{{if not (or .Main .Indirect)}}{{.Path}}{{end}}'
+go-deps-update:
 	$(AT) if command -v egg >/dev/null; then \
 		packages="`egg deps list | tr ' ' '\n'`"; \
 	else \
@@ -33,4 +33,4 @@ deps-update:
 		go mod tidy; \
 	done
 	$(AT) $(MAKE) deps-tidy
-.PHONY: deps-update
+.PHONY: go-deps-update

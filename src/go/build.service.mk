@@ -1,14 +1,11 @@
-# TODO:refactor support relative path
-include src/go/build.tool.mk
+include src/go/build.tool.mk # TODO:refactor support relative path
 
-client:
-	$(eval BINARY := $(GOBIN)/client)
-	$(eval MAIN := ./cmd/client/main.go)
+go-client:
+	$(eval MAIN := ./cmd/client)
 	@true
-.PHONY: client
+.PHONY: go-client
 
-server:
-	$(eval BINARY := $(GOBIN)/server)
-	$(eval MAIN := ./cmd/server/main.go)
+go-server:
+	$(eval MAIN := ./cmd/server)
 	@true
-.PHONY: server
+.PHONY: go-server

@@ -1,16 +1,16 @@
-test:
+go-test:
 	$(AT) $(GOTEST) -race -timeout $(TIMEOUT) $(GOTESTFLAGS) $(PACKAGES)
-.PHONY: test
+.PHONY: go-test
 
-test-clean:
+go-test-clean:
 	$(AT) go clean -testcache
-.PHONY: test-clean
+.PHONY: go-test-clean
 
-test-quick:
+go-test-quick:
 	$(AT) $(GOTEST) -timeout $(TIMEOUT) $(GOTESTFLAGS) $(PACKAGES)
-.PHONY: test-quick
+.PHONY: go-test-quick
 
-test-with-coverage:
+go-test-with-coverage:
 	$(AT) $(GOTEST) \
 		-cover \
 		-covermode atomic \
@@ -19,8 +19,8 @@ test-with-coverage:
 		-timeout $(TIMEOUT) \
 		$(GOTESTFLAGS) \
 		$(PACKAGES)
-.PHONY: test-with-coverage
+.PHONY: go-test-with-coverage
 
-test-with-coverage-report: test-with-coverage
+go-test-with-coverage-report: go-test-with-coverage
 	$(AT) go tool cover -html c.out
-.PHONY: test-with-coverage-report
+.PHONY: go-test-with-coverage-report

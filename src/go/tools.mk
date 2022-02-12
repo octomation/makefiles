@@ -1,35 +1,41 @@
 TOOLFLAGS ?= -mod=
 
-tools-env:
+go-tools-env:
 	@echo "GOBIN:       `go env GOBIN`"
 	@echo "TOOLFLAGS:   $(TOOLFLAGS)"
-.PHONY: tools-env
+.PHONY: go-tools-env
 
 ifneq (, $(wildcard ./tools/))
-tools-fetch: GOFLAGS = $(TOOLFLAGS)
-tools-fetch:
-	$(AT) cd tools; \
-	go mod download; \
+go-tools-fetch: GOFLAGS = $(TOOLFLAGS)
+go-tools-fetch:
+	$(AT) cd tools; go mod download; \
 	if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi
-.PHONY: tools-fetch
+.PHONY: go-tools-fetch
 
-tools-tidy: GOFLAGS = $(TOOLFLAGS)
-tools-tidy:
-	$(AT) cd tools; \
-	go mod tidy; \
+go-tools-tidy: GOFLAGS = $(TOOLFLAGS)
+go-tools-tidy:
+	$(AT) cd tools; go mod tidy; \
 	if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi
-.PHONY: tools-tidy
+.PHONY: go-tools-tidy
 
-tools-install: GOFLAGS = $(TOOLFLAGS)
-tools-install: GOTAGS = tools
-tools-install: tools-fetch
-	$(AT) cd tools; \
-	go generate -tags $(GOTAGS) tools.go
-.PHONY: tools-install
+go-tools-check: GOFLAGS = $(TOOLFLAGS)
+go-tools-check:
+	$(AT) cd tools; go mod verify; \
+	if command -v egg >/dev/null; then \
+		egg deps check license; \
+		egg deps check version; \
+	fi
+.PHONY: go-tools-check
 
-tools-update: GOFLAGS = $(TOOLFLAGS)
-tools-update: selector = '{{if not (or .Main .Indirect)}}{{.Path}}{{end}}'
-tools-update:
+go-tools-install: GOFLAGS = $(TOOLFLAGS)
+go-tools-install: GOTAGS = tools
+go-tools-install: go-tools-fetch
+	$(AT) cd tools; go generate -tags $(GOTAGS) tools.go
+.PHONY: go-tools-install
+
+go-tools-update: GOFLAGS = $(TOOLFLAGS)
+go-tools-update: selector = '{{if not (or .Main .Indirect)}}{{.Path}}{{end}}'
+go-tools-update:
 	$(AT) cd tools; \
 	if command -v egg >/dev/null; then \
 		packages="`egg deps list | tr ' ' '\n'`"; \
@@ -42,25 +48,25 @@ tools-update:
 		go mod tidy; \
 	done
 	$(AT) $(MAKE) tools-tidy tools-install
-.PHONY: tools-update
+.PHONY: go-tools-update
 else
-tools-disabled:
+go-tools-disabled:
 	@echo have no tools
-.PHONY: tools-disabled
+.PHONY: go-tools-disabled
 
-tools-fetch: tools-disabled
+go-tools-fetch: go-tools-disabled
 	@true
-.PHONY: tools-fetch
+.PHONY: go-tools-fetch
 
-tools-tidy: tools-disabled
+go-tools-tidy: go-tools-disabled
 	@true
-.PHONY: tools-tidy
+.PHONY: go-tools-tidy
 
-tools-install: tools-disabled
+go-tools-install: go-tools-disabled
 	@true
-.PHONY: tools-install
+.PHONY: go-tools-install
 
-tools-update: tools-disabled
+go-tools-update: go-tools-disabled
 	@true
-.PHONY: tools-update
+.PHONY: go-tools-update
 endif
