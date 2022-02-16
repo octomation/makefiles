@@ -1,8 +1,5 @@
-GODOC_HOST ?= http://localhost:6060
-
 go-docs:
-	$(AT) (sleep 2 && open $(GODOC_HOST)/pkg/$(LOCAL)/) &
-	$(AT) godoc -http=$(GODOC_HOST)
+	$(AT) go doc -all .
 .PHONY: go-docs
 
 go-fmt:

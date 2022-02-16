@@ -128,6 +128,7 @@ go-verbose:
 
 go-deps-check:
 	$(AT) go mod verify
+	$(AT) govulncheck -tags $(GOTAGS) -test ./...
 	$(AT) if command -v egg >/dev/null; then \
 		egg deps check license; \
 		egg deps check version; \
@@ -163,11 +164,8 @@ go-deps-update:
 	$(AT) $(MAKE) deps-tidy
 .PHONY: go-deps-update
 
-GODOC_HOST ?= http://localhost:6060
-
 go-docs:
-	$(AT) (sleep 2 && open $(GODOC_HOST)/pkg/$(LOCAL)/) &
-	$(AT) godoc -http=$(GODOC_HOST)
+	$(AT) go doc -all .
 .PHONY: go-docs
 
 go-fmt:

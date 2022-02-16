@@ -129,6 +129,7 @@ go-verbose:
 
 go-deps-check:
 	$(AT) go mod verify
+	$(AT) govulncheck -tags $(GOTAGS) -test ./...
 	$(AT) if command -v egg >/dev/null; then \
 		egg deps check license; \
 		egg deps check version; \
@@ -164,11 +165,8 @@ go-deps-update:
 	$(AT) $(MAKE) deps-tidy
 .PHONY: go-deps-update
 
-GODOC_HOST ?= http://localhost:6060
-
 go-docs:
-	$(AT) (sleep 2 && open $(GODOC_HOST)/pkg/$(LOCAL)/) &
-	$(AT) godoc -http=$(GODOC_HOST)
+	$(AT) go doc -all .
 .PHONY: go-docs
 
 go-fmt:
@@ -329,23 +327,29 @@ endif
 
 export PATH := $(GOBIN):$(PATH)
 
-init: deps check hooks
+setup: deps tools lint test
 	$(AT) git config core.autocrlf input
-.PHONY: init
+.PHONY: setup
+
+test: go-test
+.PHONY: test
+
+lint: go-lint
+.PHONY: lint
 
 check: test lint
 .PHONY: check
 
-clean: deps-clean test-clean
+clean: go-deps-clean go-test-clean
 .PHONY: clean
 
-deps: deps-fetch tools-install
+deps: go-deps-fetch go-tools-install
 .PHONY: deps
 
 docs: go-docs
 .PHONY: docs
 
-env: go-env tools-env
+env: go-env go-tools-env
 env:
 	@echo "PATH:        $(PATH)"
 .PHONY: env
@@ -356,17 +360,17 @@ format: go-fmt
 generate: go-generate format
 .PHONY: generate
 
-refresh: deps-tidy update deps generate check
+refresh: go-deps-tidy update deps generate check
 .PHONY: refresh
 
-tools: tools-install
+tools: go-tools-install
 .PHONY: tools
 
-update: deps-update tools-update
+update: go-deps-update go-tools-update
 .PHONY: update
 
 verbose: make-verbose go-verbose
 .PHONY: verbose
 
-verify: deps-check generate check git-check
+verify: go-deps-check generate check git-check
 .PHONY: verify

@@ -20,23 +20,29 @@ include src/docker/go.mk
 
 export PATH := $(GOBIN):$(PATH)
 
-init: deps check hooks
+setup: deps tools lint test
 	$(AT) git config core.autocrlf input
-.PHONY: init
+.PHONY: setup
+
+test: go-test
+.PHONY: test
+
+lint: go-lint
+.PHONY: lint
 
 check: test lint
 .PHONY: check
 
-clean: deps-clean test-clean
+clean: go-deps-clean go-test-clean
 .PHONY: clean
 
-deps: deps-fetch tools-install
+deps: go-deps-fetch go-tools-install
 .PHONY: deps
 
 docs: go-docs
 .PHONY: docs
 
-env: go-env tools-env
+env: go-env go-tools-env
 env:
 	@echo "PATH:        $(PATH)"
 .PHONY: env
@@ -47,17 +53,17 @@ format: go-fmt
 generate: go-generate format
 .PHONY: generate
 
-refresh: deps-tidy update deps generate check
+refresh: go-deps-tidy update deps generate check
 .PHONY: refresh
 
-tools: tools-install
+tools: go-tools-install
 .PHONY: tools
 
-update: deps-update tools-update
+update: go-deps-update go-tools-update
 .PHONY: update
 
 verbose: make-verbose go-verbose
 .PHONY: verbose
 
-verify: deps-check generate check git-check
+verify: go-deps-check generate check git-check
 .PHONY: verify

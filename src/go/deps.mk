@@ -1,5 +1,6 @@
 go-deps-check:
 	$(AT) go mod verify
+	$(AT) govulncheck -tags $(GOTAGS) -test ./...
 	$(AT) if command -v egg >/dev/null; then \
 		egg deps check license; \
 		egg deps check version; \
