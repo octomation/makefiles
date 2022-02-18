@@ -1,3 +1,7 @@
+git-clean:
+	$(AT) git clean -fdx
+.PHONY: git-clean
+
 git-check:
 	$(AT) git diff --exit-code >/dev/null
 	$(AT) git diff --cached --exit-code >/dev/null

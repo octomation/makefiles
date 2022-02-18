@@ -1,3 +1,3 @@
-go-test-performance:
+go-performance-test:
 	$(AT) $(GOTEST) -bench=. -run=^$(uuidgen) $(GOTESTFLAGS) $(PACKAGES)
-.PHONY: go-test-performance
+.PHONY: go-performance-test

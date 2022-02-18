@@ -1,20 +1,21 @@
-go-test-integration: GOTAGS = $(GOTAGS) integration
-go-test-integration:
+go-integration-test: GOTAGS = $(GOTAGS) integration
+go-integration-test:
+	$(AT) $(GOTEST) -race -tags $(GOTAGS) -timeout $(TIMEOUT) $(GOTESTFLAGS) $(PACKAGES)
+.PHONY: go-test-integration-quick
+
+go-integration-test-with-coverage: GOTAGS = $(GOTAGS) integration
+go-integration-test-with-coverage:
 	$(AT) $(GOTEST) \
 		-cover \
 		-covermode atomic \
-		-coverprofile integration.out \
+		-coverprofile i.out \
 		-race \
 		-tags $(GOTAGS) \
+		-timeout $(TIMEOUT) \
 		$(GOTESTFLAGS) \
 		$(PACKAGES)
-.PHONY: go-test-integration
+.PHONY: go-integration-test-with-coverage
 
-go-test-integration-quick: GOTAGS = $(GOTAGS) integration
-go-test-integration-quick:
-	$(AT) $(GOTEST) -tags $(GOTAGS) $(GOTESTFLAGS) $(PACKAGES)
-.PHONY: go-test-integration-quick
-
-go-test-integration-report: go-test-integration
-	$(AT) go tool cover -html integration.out
-.PHONY: go-test-integration-report
+go-integration-test-with-coverage-report: go-integration-test-with-coverage
+	$(AT) go tool cover -html i.out
+.PHONY: go-integration-test-with-coverage-report

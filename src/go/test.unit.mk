@@ -1,3 +1,7 @@
+go-check:
+	$(AT) $(GOTEST) -count=1 -test.run=^$(uuidgen) ./...
+.PHONY: go-check
+
 go-test:
 	$(AT) $(GOTEST) -race -timeout $(TIMEOUT) $(GOTESTFLAGS) $(PACKAGES)
 .PHONY: go-test
@@ -5,10 +9,6 @@ go-test:
 go-test-clean:
 	$(AT) go clean -testcache
 .PHONY: go-test-clean
-
-go-test-quick:
-	$(AT) $(GOTEST) -timeout $(TIMEOUT) $(GOTESTFLAGS) $(PACKAGES)
-.PHONY: go-test-quick
 
 go-test-with-coverage:
 	$(AT) $(GOTEST) \

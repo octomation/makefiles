@@ -1,7 +1,7 @@
-go-test-fuzzing:
+go-fuzzing-test:
 	$(AT) $(GOTEST) -fuzz $(PACKAGES)
-.PHONY: go-test-fuzzing
+.PHONY: go-fuzzing-test
 
-go-test-fuzzing-clean:
+go-fuzzing-test-clean:
 	$(AT) go clean -fuzzcache
-.PHONY: go-test-fuzzing-clean
+.PHONY: go-fuzzing-test-clean

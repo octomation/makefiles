@@ -15,55 +15,59 @@ include src/go/deps.mk
 include src/go/dev.mk
 include src/go/test.unit.mk
 include src/go/test.integration.mk
+include src/go/test.fuzzing.mk
+include src/go/test.performance.mk
 include src/go/tools.mk
 include src/docker/go.mk
 
 export PATH := $(GOBIN):$(PATH)
 
-setup: deps tools lint test
-	$(AT) git config core.autocrlf input
+setup: git-config git-hooks go-deps-fetch go-tools-install
 .PHONY: setup
 
-test: go-test
-.PHONY: test
-
-lint: go-lint
-.PHONY: lint
-
-check: test lint
-.PHONY: check
-
-clean: go-deps-clean go-test-clean
+clean: go-deps-clean go-test-clean go-fuzzing-test-clean
 .PHONY: clean
 
-deps: go-deps-fetch go-tools-install
-.PHONY: deps
-
-docs: go-docs
-.PHONY: docs
+drop: git-clean git-rmdir clean
+.PHONY: drop
 
 env: go-env go-tools-env
 env:
 	@echo "PATH:        $(PATH)"
 .PHONY: env
 
-format: go-fmt
-.PHONY: format
-
-generate: go-generate format
-.PHONY: generate
-
-refresh: go-deps-tidy update deps generate check
-.PHONY: refresh
+deps: go-deps-fetch
+.PHONY: deps
 
 tools: go-tools-install
 .PHONY: tools
 
-update: go-deps-update go-tools-update
-.PHONY: update
+format: go-fmt
+.PHONY: format
+
+generate: go-generate go-fmt
+.PHONY: generate
+
+check: lint test
+.PHONY: check
+
+check-full: find-todo
+check-full: go-deps-check go-tools-check
+check-full: go-deps-tidy go-tools-tidy go-generate
+check-full: git-check go-check
+.PHONY: check-full
+
+lint: go-lint
+.PHONY: lint
+
+test: go-test
+.PHONY: test
+
+test-full: go-test go-fuzzing-test go-integration-test go-performance-test
+.PHONY: test-full
+
+test-with-coverage: go-test-with-coverage
+.PHONY: test-with-coverage
 
 verbose: make-verbose go-verbose
 .PHONY: verbose
-
-verify: go-deps-check generate check git-check
-.PHONY: verify
