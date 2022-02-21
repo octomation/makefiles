@@ -49,7 +49,7 @@ go-tools-update:
 		go mod edit -require=$$package@latest; \
 		go mod tidy; \
 	done
-	$(AT) $(MAKE) tools-tidy tools-install
+	$(AT) $(MAKE) go-tools-tidy go-tools-install
 .PHONY: go-tools-update
 else
 go-tools-disabled:

@@ -51,23 +51,23 @@ generate: go-generate go-fmt
 check: lint test
 .PHONY: check
 
-check-full: find-todo
-check-full: go-deps-check go-tools-check
-check-full: go-deps-tidy go-tools-tidy go-generate
-check-full: git-check go-check
-.PHONY: check-full
-
 lint: go-lint
 .PHONY: lint
 
 test: go-test
 .PHONY: test
 
-test-full: go-test go-fuzzing-test go-integration-test go-performance-test
-.PHONY: test-full
-
-test-with-coverage: go-test-with-coverage
+test-with-coverage: TIMEOUT=2s
+test-with-coverage: go-integration-test-with-coverage
 .PHONY: test-with-coverage
+
+full-check: find-todos
+full-check: go-check go-deps-check go-tools-check
+full-check: go-deps-tidy go-tools-tidy go-generate git-check
+.PHONY: full-check
+
+full-test: go-test go-fuzzing-test go-integration-test go-performance-test
+.PHONY: full-test
 
 verbose: make-verbose go-verbose
 .PHONY: verbose

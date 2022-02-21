@@ -11,14 +11,13 @@ OS    := $(shell uname -s | tr '[:upper:]' '[:lower:]')
 DATE  := $(shell date -u +%Y-%m-%dT%T%Z)
 SHELL := /usr/bin/env bash -euo pipefail -c
 
-find-todo:
+find-todos:
 	$(AT) grep \
-		--exclude=Makefile \
-		--exclude-dir={bin,node_modules,vendor} \
+		--exclude-dir={bin,docs,node_modules,vendor} \
 		--color \
 		--text \
-		-inRo -E ' TODO:.*|SkipNow' . || true
-.PHONY: find-todo
+		-inRo -E ' TODO:.*|SkipNow' . | grep -v ' TODO:.*|SkipNow' || true
+.PHONY: find-todos
 
 make-verbose:
 	$(eval AT :=) $(eval MAKE := $(MAKE) verbose) @true
@@ -170,7 +169,7 @@ go-deps-update:
 		go mod edit -require=$$package@latest; \
 		go mod tidy; \
 	done
-	$(AT) $(MAKE) deps-tidy
+	$(AT) $(MAKE) go-deps-tidy
 .PHONY: go-deps-update
 
 go-docs:
@@ -185,6 +184,15 @@ go-generate:
 	$(AT) go generate $(PACKAGES)
 .PHONY: go-generate
 
+# How to work with linters
+#
+#  ```bash
+#  $ golangci-lint linters --out-format=json | jq '.[] | {name: .name, url: .origin}'
+#  $ golangci-lint linters --out-format=json | jq '.[] | select(.presets[] | contains ("bugs"))'
+#  $ golangci-lint linters --out-format=json | jq '.[] | select(.origin == "")'
+#  ```
+#
+# For more experience see https://jqplay.org, https://stedolan.github.io/jq/.
 go-lint:
 	$(AT) golangci-lint run --enable looppointer ./...
 .PHONY: go-lint
@@ -220,17 +228,17 @@ go-test-with-coverage-report: go-test-with-coverage
 	$(AT) go tool cover -html c.out
 .PHONY: go-test-with-coverage-report
 
-go-integration-test: GOTAGS = $(GOTAGS) integration
+go-integration-test: GOTAGS := $(GOTAGS) integration
 go-integration-test:
 	$(AT) $(GOTEST) -race -tags $(GOTAGS) -timeout $(TIMEOUT) $(GOTESTFLAGS) $(PACKAGES)
 .PHONY: go-test-integration-quick
 
-go-integration-test-with-coverage: GOTAGS = $(GOTAGS) integration
+go-integration-test-with-coverage: GOTAGS := $(GOTAGS) integration
 go-integration-test-with-coverage:
 	$(AT) $(GOTEST) \
 		-cover \
 		-covermode atomic \
-		-coverprofile i.out \
+		-coverprofile c.out \
 		-race \
 		-tags $(GOTAGS) \
 		-timeout $(TIMEOUT) \
@@ -239,7 +247,7 @@ go-integration-test-with-coverage:
 .PHONY: go-integration-test-with-coverage
 
 go-integration-test-with-coverage-report: go-integration-test-with-coverage
-	$(AT) go tool cover -html i.out
+	$(AT) go tool cover -html c.out
 .PHONY: go-integration-test-with-coverage-report
 
 go-fuzzing-test:
@@ -305,7 +313,7 @@ go-tools-update:
 		go mod edit -require=$$package@latest; \
 		go mod tidy; \
 	done
-	$(AT) $(MAKE) tools-tidy tools-install
+	$(AT) $(MAKE) go-tools-tidy go-tools-install
 .PHONY: go-tools-update
 else
 go-tools-disabled:
@@ -383,23 +391,23 @@ generate: go-generate go-fmt
 check: lint test
 .PHONY: check
 
-check-full: find-todo
-check-full: go-deps-check go-tools-check
-check-full: go-deps-tidy go-tools-tidy go-generate
-check-full: git-check go-check
-.PHONY: check-full
-
 lint: go-lint
 .PHONY: lint
 
 test: go-test
 .PHONY: test
 
-test-full: go-test go-fuzzing-test go-integration-test go-performance-test
-.PHONY: test-full
-
-test-with-coverage: go-test-with-coverage
+test-with-coverage: TIMEOUT=2s
+test-with-coverage: go-integration-test-with-coverage
 .PHONY: test-with-coverage
+
+full-check: find-todos
+full-check: go-check go-deps-check go-tools-check
+full-check: go-deps-tidy go-tools-tidy go-generate git-check
+.PHONY: full-check
+
+full-test: go-test go-fuzzing-test go-integration-test go-performance-test
+.PHONY: full-test
 
 verbose: make-verbose go-verbose
 .PHONY: verbose

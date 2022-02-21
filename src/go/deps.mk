@@ -33,5 +33,5 @@ go-deps-update:
 		go mod edit -require=$$package@latest; \
 		go mod tidy; \
 	done
-	$(AT) $(MAKE) deps-tidy
+	$(AT) $(MAKE) go-deps-tidy
 .PHONY: go-deps-update
