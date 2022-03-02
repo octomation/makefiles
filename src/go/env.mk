@@ -40,6 +40,7 @@ go-env:
 	@echo "GOTEST:      $(GOTEST)"
 	@echo "GOTESTFLAGS: $(GOTESTFLAGS)"
 	@echo "GOTRACEBACK: $(GOTRACEBACK)"
+	@echo "GOVERSION:   $(strip `go version | awk '{print $$3}' | sed -e 's|^go||g'`)"
 	@echo "LOCAL:       $(LOCAL)"
 	@echo "MODULE:      $(MODULE)"
 	@echo "PACKAGES:    $(PACKAGES)"
