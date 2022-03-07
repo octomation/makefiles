@@ -301,7 +301,7 @@ go-install-clean:
 .PHONY: go-install-clean
 
 go-dist-check:
-	$(AT) goreleaser --snapshot --skip-publish --rm-dist
+	$(AT) goreleaser --clean --skip-publish --snapshot
 .PHONY: go-dist-check
 
 go-dist-installer:

@@ -10,21 +10,33 @@ OS    := $(shell uname -s | tr '[:upper:]' '[:lower:]')
 DATE  := $(shell date -u +%Y-%m-%dT%T%Z)
 SHELL := /usr/bin/env bash -euo pipefail -c
 
+find-todos:
+	$(AT) grep \
+		--exclude-dir={bin,docs} \
+		--exclude-dir={node_modules,vendor} \
+		--exclude-dir={.docz,.next} \
+		--color \
+		--text \
+		-inRo -E ' TODO:.*|SkipNow' . | grep -v ' TODO:.*|SkipNow' || true
+.PHONY: find-todos
+
+help:
+	@LC_ALL=C $(MAKE) -pRrq -f $(firstword $(MAKEFILE_LIST)) : 2>/dev/null \
+	| awk -v RS= -F: '/(^|\n)# Files(\n|$$)/,/(^|\n)# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' \
+	| sort \
+	| egrep -v -e '^[^[:alnum:]]' -e '^$@$$' || true
+.PHONY: help
+
 make-verbose:
 	$(eval AT :=) $(eval MAKE := $(MAKE) verbose) @true
 .PHONY: make-verbose
 
-find-todo:
-	$(AT) grep \
-		--exclude=Makefile \
-		--exclude-dir={bin,components,node_modules,vendor} \
-		--color \
-		--text \
-		-inRo -E ' TODO:.*|SkipNow' . || true
-.PHONY: find-todo
-
-COMMIT  := $(shell git rev-parse --verify HEAD)
+COMMIT  := $(shell git rev-parse --short --verify HEAD)
 RELEASE := $(shell git describe --tags 2>/dev/null | rev | cut -d - -f3- | rev)
+
+git-config:
+	$(AT) git config core.autocrlf input
+.PHONY: git-config
 
 ifneq (, $(wildcard bin/lib/git/hooks/))
 ifdef GIT_HOOKS
@@ -60,6 +72,10 @@ git-hooks:
 git-unhook: ;
 .PHONY: git-unhook
 endif
+
+git-clean:
+	$(AT) git clean -fdx
+.PHONY: git-clean
 
 git-check:
 	$(AT) git diff --exit-code >/dev/null
@@ -115,6 +131,7 @@ go-env:
 	@echo "GOTEST:      $(GOTEST)"
 	@echo "GOTESTFLAGS: $(GOTESTFLAGS)"
 	@echo "GOTRACEBACK: $(GOTRACEBACK)"
+	@echo "GOVERSION:   $(strip `go version | awk '{print $$3}' | sed -e 's|^go||g'`)"
 	@echo "LOCAL:       $(LOCAL)"
 	@echo "MODULE:      $(MODULE)"
 	@echo "PACKAGES:    $(PACKAGES)"
@@ -161,7 +178,7 @@ go-deps-update:
 		go mod edit -require=$$package@latest; \
 		go mod tidy; \
 	done
-	$(AT) $(MAKE) deps-tidy
+	$(AT) $(MAKE) go-deps-tidy
 .PHONY: go-deps-update
 
 go-docs:
@@ -176,13 +193,26 @@ go-generate:
 	$(AT) go generate $(PACKAGES)
 .PHONY: go-generate
 
+# How to work with linters
+#
+#  ```bash
+#  $ golangci-lint linters --out-format=json | jq '.[] | {name: .name, url: .origin}'
+#  $ golangci-lint linters --out-format=json | jq '.[] | select(.presets[] | contains ("bugs"))'
+#  $ golangci-lint linters --out-format=json | jq '.[] | select(.origin == "")'
+#  ```
+#
+# For more experience see https://jqplay.org, https://stedolan.github.io/jq/.
+go-lint:
+	$(AT) golangci-lint run --enable looppointer ./...
+.PHONY: go-lint
+
 go-pkg:
 	$(AT) open https://pkg.go.dev/$(MODULE)@$(RELEASE)
 .PHONY: go-pkg
 
-go-lint:
-	$(AT) golangci-lint run --enable looppointer ./...
-.PHONY: go-lint
+go-check:
+	$(AT) $(GOTEST) -count=1 -test.run=^$(uuidgen) ./...
+.PHONY: go-check
 
 go-test:
 	$(AT) $(GOTEST) -race -timeout $(TIMEOUT) $(GOTESTFLAGS) $(PACKAGES)
@@ -191,10 +221,6 @@ go-test:
 go-test-clean:
 	$(AT) go clean -testcache
 .PHONY: go-test-clean
-
-go-test-quick:
-	$(AT) $(GOTEST) -timeout $(TIMEOUT) $(GOTESTFLAGS) $(PACKAGES)
-.PHONY: go-test-quick
 
 go-test-with-coverage:
 	$(AT) $(GOTEST) \
@@ -211,26 +237,27 @@ go-test-with-coverage-report: go-test-with-coverage
 	$(AT) go tool cover -html c.out
 .PHONY: go-test-with-coverage-report
 
-go-test-integration: GOTAGS = $(GOTAGS) integration
-go-test-integration:
+go-integration-test: GOTAGS := $(GOTAGS) integration
+go-integration-test:
+	$(AT) $(GOTEST) -race -tags $(GOTAGS) -timeout $(TIMEOUT) $(GOTESTFLAGS) $(PACKAGES)
+.PHONY: go-test-integration-quick
+
+go-integration-test-with-coverage: GOTAGS := $(GOTAGS) integration
+go-integration-test-with-coverage:
 	$(AT) $(GOTEST) \
 		-cover \
 		-covermode atomic \
-		-coverprofile integration.out \
+		-coverprofile c.out \
 		-race \
 		-tags $(GOTAGS) \
+		-timeout $(TIMEOUT) \
 		$(GOTESTFLAGS) \
 		$(PACKAGES)
-.PHONY: go-test-integration
+.PHONY: go-integration-test-with-coverage
 
-go-test-integration-quick: GOTAGS = $(GOTAGS) integration
-go-test-integration-quick:
-	$(AT) $(GOTEST) -tags $(GOTAGS) $(GOTESTFLAGS) $(PACKAGES)
-.PHONY: go-test-integration-quick
-
-go-test-integration-report: go-test-integration
-	$(AT) go tool cover -html integration.out
-.PHONY: go-test-integration-report
+go-integration-test-with-coverage-report: go-integration-test-with-coverage
+	$(AT) go tool cover -html c.out
+.PHONY: go-integration-test-with-coverage-report
 
 # TODO:refactor support relative path
 BINARY  ?= $(GOBIN)/$(shell basename $(MAIN))
@@ -273,7 +300,7 @@ go-server:
 .PHONY: go-server
 
 go-dist-check:
-	$(AT) goreleaser --snapshot --skip-publish --rm-dist
+	$(AT) goreleaser --clean --skip-publish --snapshot
 .PHONY: go-dist-check
 
 go-dist-installer:
@@ -288,32 +315,34 @@ go-tools-env:
 .PHONY: go-tools-env
 
 ifneq (, $(wildcard ./tools/))
-go-tools-fetch: GOFLAGS = $(TOOLFLAGS)
-go-tools-fetch:
-	$(AT) cd tools; go mod download; \
-	if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi
-.PHONY: go-tools-fetch
-
-go-tools-tidy: GOFLAGS = $(TOOLFLAGS)
-go-tools-tidy:
-	$(AT) cd tools; go mod tidy; \
-	if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi
-.PHONY: go-tools-tidy
-
 go-tools-check: GOFLAGS = $(TOOLFLAGS)
 go-tools-check:
-	$(AT) cd tools; go mod verify; \
+	$(AT) cd tools; \
+	go mod verify; \
+	govulncheck -tags $(GOTAGS) -test ./...; \
 	if command -v egg >/dev/null; then \
 		egg deps check license; \
 		egg deps check version; \
 	fi
 .PHONY: go-tools-check
 
+go-tools-fetch: GOFLAGS = $(TOOLFLAGS)
+go-tools-fetch:
+	$(AT) cd tools; go mod download; \
+	if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi
+.PHONY: go-tools-fetch
+
 go-tools-install: GOFLAGS = $(TOOLFLAGS)
 go-tools-install: GOTAGS = tools
 go-tools-install: go-tools-fetch
 	$(AT) cd tools; go generate -tags $(GOTAGS) tools.go
 .PHONY: go-tools-install
+
+go-tools-tidy: GOFLAGS = $(TOOLFLAGS)
+go-tools-tidy:
+	$(AT) cd tools; go mod tidy; \
+	if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi
+.PHONY: go-tools-tidy
 
 go-tools-update: GOFLAGS = $(TOOLFLAGS)
 go-tools-update: selector = '{{if not (or .Main .Indirect)}}{{.Path}}{{end}}'
@@ -329,24 +358,28 @@ go-tools-update:
 		go mod edit -require=$$package@latest; \
 		go mod tidy; \
 	done
-	$(AT) $(MAKE) tools-tidy tools-install
+	$(AT) $(MAKE) go-tools-tidy go-tools-install
 .PHONY: go-tools-update
 else
 go-tools-disabled:
 	@echo have no tools
 .PHONY: go-tools-disabled
 
+go-tools-check: go-tools-disabled
+	@true
+.PHONY: go-tools-check
+
 go-tools-fetch: go-tools-disabled
 	@true
 .PHONY: go-tools-fetch
 
-go-tools-tidy: go-tools-disabled
-	@true
-.PHONY: go-tools-tidy
-
 go-tools-install: go-tools-disabled
 	@true
 .PHONY: go-tools-install
+
+go-tools-tidy: go-tools-disabled
+	@true
+.PHONY: go-tools-tidy
 
 go-tools-update: go-tools-disabled
 	@true
