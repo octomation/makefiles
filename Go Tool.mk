@@ -26,7 +26,7 @@ export PATH := $(GOBIN):$(PATH)
 setup: git-config git-hooks go-deps-fetch go-tools-install
 .PHONY: setup
 
-clean: go-deps-clean go-install-clean go-test-clean go-fuzzing-test-clean
+clean: go-deps-clean go-dist-clean go-install-clean go-test-clean go-fuzzing-test-clean
 .PHONY: clean
 
 drop: clean git-clean git-rmdir
