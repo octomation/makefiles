@@ -27,7 +27,7 @@ and task-specific parts to reuse code and avoid duplication.
 - [🧩 Template for typical CLI tool written on Go](https://github.com/octomation/go-tool).
 - [🧩 Template for typical service written on Go](https://github.com/octomation/go-service).
 
-<p align="right">made with ❤️ for everyone by OctoLab</p>
+<p align="right">made with ❤️ for everyone by <a href="https://www.octolab.org/">OctoLab</a></p>
 
 [mirror.page]:      https://bitbucket.org/kamilsk/makefiles
 [mirror.icon]:      https://img.shields.io/badge/mirror-bitbucket-blue
