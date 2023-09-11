@@ -472,7 +472,7 @@ check: lint test
 
 fast-check: find-todos
 fast-check: go-check go-deps-check go-tools-check
-fast-check: go-deps-tidy go-tools-tidy go-generate git-check
+fast-check: go-deps-tidy go-tools-tidy go-generate go-fmt git-check
 .PHONY: fast-check
 
 full-check: fast-check go-dist-check check
