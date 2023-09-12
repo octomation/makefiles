@@ -1,0 +1,35 @@
+---
+code: null
+id: MDU6SXNzdWU3Nzg4NjY5Mzg=
+databaseId: 778866938
+number: 26
+url: https://github.com/octomation/makefiles/issues/26
+title: "exclude bin dir for todo"
+issueType: null
+labels: []
+assignees:
+  - kamilsk
+milestone: null
+parent: null
+issueFields: {}
+state: CLOSED
+stateReason: COMPLETED
+duplicateOf: null
+createdAt: 2021-01-05T10:54:13Z
+updatedAt: 2021-09-05T16:40:57Z
+lastEditedAt: null
+closedAt: 2021-01-05T11:08:27Z
+---
+
+# exclude bin dir for todo
+
+```bash
+$ make todo
+./paas/rpcprotocol/rater.go:51: TODO:legacy
+./bin/darwin/x86_64/golangci-lint:13933:SkipNow
+./bin/darwin/x86_64/golangci-lint:14403:SkipNow
+./bin/darwin/x86_64/golangci-lint:17188: TODO: pushState with updated state and read it on page load,
+./bin/darwin/x86_64/golangci-lint:17333: TODO: Implement smarter auto-zoom using the viewBox attribute
+./bin/darwin/x86_64/golangci-lint:17372: TODO: scale the graph with the viewBox attribute.
+./components/makefiles/vendor.mk:20: TODO:.*|SkipNow' . || true
+```
