@@ -1,20 +1,20 @@
 ---
 code:
-id:
-databaseId:
-number:
-url:
+id: I_kwDODZzKdc8AAAABSjpQTQ
+databaseId: 5540302925
+number: 78
+url: https://github.com/octomation/makefiles/issues/78
 title: "go: revisit GOPROXY=direct and the unused GOPRIVATE domain"
 labels:
-  - "type: bug"
-  - "scope: deps"
+  - "type: improvement"
+  - "scope: code"
   - "impact: high"
-  - "effort: low"
+  - "effort: easy"
 milestone:
 state: OPEN
 stateReason:
-createdAt:
-updatedAt:
+createdAt: 2026-09-22T13:30:59Z
+updatedAt: 2026-09-22T13:30:59Z
 lastEditedAt:
 closedAt:
 ---
